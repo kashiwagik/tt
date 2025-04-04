@@ -113,7 +113,7 @@ def generate_html(date_str, schedule_data, grades, prev_date, next_date):
 
     .timetable {
         display: grid;
-        grid-template-columns: 100px repeat(5, 1fr);
+        grid-template-columns: 10% repeat(5, 1fr);
         grid-template-rows: 50px repeat(4, 1fr);
         width: 100%;
         width-max: 1024px;
@@ -167,41 +167,6 @@ def generate_html(date_str, schedule_data, grades, prev_date, next_date):
         font-size: 0.8em;
         color: #666;
     }
-
-    .comments {
-        margin: 10px 0;
-        padding: 10px;
-        background-color: #fff9c4;
-        border-left: 4px solid #ffd600;
-        border-radius: 3px;
-    }
-
-    .comment {
-        margin-bottom: 5px;
-    }
-
-    .comment:last-child {
-        margin-bottom: 0;
-    }
-
-    @media (max-width: 600px) {
-        body {
-            font-size: 14px;
-        }
-        
-        .container {
-            padding: 5px;
-        }
-        
-        h1 {
-            font-size: 1.3em;
-            margin: 8px 0;
-        }
-        
-        .header, .cell {
-            padding: 8px 5px;
-        }
-    }
     
     .comments {
         margin: 10px 0;
@@ -221,7 +186,7 @@ def generate_html(date_str, schedule_data, grades, prev_date, next_date):
     
     @media (max-width: 600px) {
         body {
-            font-size: 14px;
+            font-size: 11px;
         }
         
         .container {
