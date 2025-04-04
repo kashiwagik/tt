@@ -133,8 +133,8 @@
     <div class="container">
         <h1>4月27日(日)</h1>
     <div class="navigation">
-        <a href="../202504/20250426.html">前の日</a>
-        <a href="../202504/20250428.html">次の日</a>
+        <a href="../202504/20250427.html">前の日</a>
+        <a href="../202504/20250427.html">次の日</a>
     </div>
         <div class="timetable">
         <div class="header cell">時限</div>
@@ -176,5 +176,36 @@
 
         </div>
     </div>
+    
+<script>
+  let touchStartX = 0;
+  let touchEndX = 0;
+
+  const threshold = 50; // スワイプ判定のしきい値（px）
+
+  document.addEventListener('touchstart', function(e) {
+    touchStartX = e.changedTouches[0].screenX;
+  });
+
+  document.addEventListener('touchend', function(e) {
+    touchEndX = e.changedTouches[0].screenX;
+    handleSwipe();
+  });
+
+  function handleSwipe() {
+    const deltaX = touchEndX - touchStartX;
+
+    if (Math.abs(deltaX) > threshold) {
+      if (deltaX > 0) {
+        // 右スワイプ
+        window.location.href = '../202504/20250427.html';
+      } else {
+        // 左スワイプ
+        window.location.href = '../202504/20250427.html';
+      }
+    }
+  }
+</script>
+
 </body>
 </html>

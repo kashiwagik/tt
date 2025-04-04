@@ -80,6 +80,9 @@ def generate_html(date_str, schedule_data, grades, prev_date, next_date):
     # 日付の表示形式
     display_date = f"{month}月{day}日({weekday})"
     
+    prev_ref = f"../{year}{month:02d}/{year}{month:02d}{day:02d}.html"
+    next_ref = f"../{year}{month:02d}/{year}{month:02d}{day:02d}.html"
+    
     # CSSスタイルを定義
     css = """
     * {
@@ -219,8 +222,8 @@ def generate_html(date_str, schedule_data, grades, prev_date, next_date):
     <div class="container">
         <h1>{display_date}</h1>
     <div class="navigation">
-        <a href="../{prev_date[0:6]}/{prev_date}.html">前の日</a>
-        <a href="../{next_date[0:6]}/{next_date}.html">次の日</a>
+        <a href="{prev_ref}">前の日</a>
+        <a href="{next_ref}">次の日</a>
     </div>
         <div class="timetable">
 """
@@ -248,6 +251,37 @@ def generate_html(date_str, schedule_data, grades, prev_date, next_date):
     html += """
         </div>
     </div>
+    
+<script>
+  let touchStartX = 0;
+  let touchEndX = 0;
+
+  const threshold = 50; // スワイプ判定のしきい値（px）
+
+  document.addEventListener('touchstart', function(e) {
+    touchStartX = e.changedTouches[0].screenX;
+  });
+
+  document.addEventListener('touchend', function(e) {
+    touchEndX = e.changedTouches[0].screenX;
+    handleSwipe();
+  });
+
+  function handleSwipe() {
+    const deltaX = touchEndX - touchStartX;
+
+    if (Math.abs(deltaX) > threshold) {
+      if (deltaX > 0) {
+        // 右スワイプ
+        window.location.href = '""" + next_ref + """';
+      } else {
+        // 左スワイプ
+        window.location.href = '""" + prev_ref + """';
+      }
+    }
+  }
+</script>
+
 </body>
 </html>
 """
