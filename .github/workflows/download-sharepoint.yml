@@ -1,40 +1,38 @@
-name: Download Excel from SharePoint
+name: Download SharePoint Excel
 
 on:
-  workflow_dispatch:  # 手動実行
+  workflow_dispatch:
 
 jobs:
   download:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Get access token from Microsoft Identity Platform
-        id: get_token
+      - name: Get Access Token
+        id: token
         run: |
-          response=$(curl -s -X POST "https://login.microsoftonline.com/${{ secrets.GRAPH_TENANT_ID }}/oauth2/v2.0/token" \
-            -H "Content-Type: application/x-www-form-urlencoded" \
+          RESPONSE=$(curl -s -X POST -H "Content-Type: application/x-www-form-urlencoded" \
             -d "client_id=${{ secrets.GRAPH_CLIENT_ID }}" \
             -d "scope=https://graph.microsoft.com/.default" \
             -d "client_secret=${{ secrets.GRAPH_CLIENT_SECRET }}" \
-            -d "grant_type=client_credentials")
+            -d "grant_type=client_credentials" \
+            "https://login.microsoftonline.com/${{ secrets.GRAPH_TENANT_ID }}/oauth2/v2.0/token")
+          echo "token=$(echo $RESPONSE | jq -r '.access_token')" >> $GITHUB_OUTPUT
 
-          echo "access_token=$(echo $response | jq -r '.access_token')" >> $GITHUB_OUTPUT
-
-      - name: Download Excel file from SharePoint
+      - name: Download Excel File
         run: |
-          mkdir -p data
           curl -L -X GET \
-            -H "Authorization: Bearer ${{ steps.get_token.outputs.access_token }}" \
-            "https://graph.microsoft.com/v1.0/drives/${{ secrets.SHAREPOINT_DRIVE_ID }}/root:/Shared Documents/140.%E3%82%B9%E3%82%B1%E3%82%B8%E3%83%A5%E3%83%BC%E3%83%AB%E3%83%BB%E6%99%82%E9%96%93%E5%89%B2/2025(R7)%E5%B9%B4%E5%BA%A6%20%E6%99%82%E9%96%93%E5%89%B2/%E3%80%902025%E3%83%BB04%EF%BD%9E09%E6%9C%88%20%E5%89%8D%E6%9C%9F%E3%80%91%E5%85%A8%E5%AD%A6%E5%B9%B4%E6%99%82%E9%96%93%E5%89%B2.xlsx:/content" \
-            -o data/timetable_2025.xlsx
+            -H "Authorization: Bearer ${{ steps.token.outputs.token }}" \
+            -H "Accept: application/json" \
+            "https://graph.microsoft.com/v1.0/sites/${{ secrets.SHAREPOINT_SITE_ID }}/drives/${{ secrets.SHAREPOINT_DRIVE_ID }}/items/${{ secrets.SHAREPOINT_ITEM_ID }}/content" \
+            -o data/downloaded.xlsx
 
-      - name: Commit and push file
+      - name: Commit and Push
         run: |
-          git config user.name "github-actions"
-          git config user.email "github-actions@github.com"
-          git add data/timetable_2025.xlsx
-          git commit -m "Add downloaded Excel from SharePoint"
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          git add data/downloaded.xlsx
+          git commit -m "Downloaded Excel from SharePoint"
           git push
