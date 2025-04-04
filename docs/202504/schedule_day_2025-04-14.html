@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2025年4月14日(月) 時間割</title>
+    <style>
+
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+    
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        color: #333;
+        background-color: #f5f5f5;
+        font-size: 16px;
+    }
+    
+    .container {
+        max-width: 100%;
+        margin: 0 auto;
+        padding: 10px;
+    }
+    
+    h1 {
+        color: #2c3e50;
+        text-align: center;
+        margin: 10px 0;
+        font-size: 1.5em;
+    }
+    
+    .grade-nav {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin: 10px 0;
+        position: sticky;
+        top: 0;
+        background-color: #f5f5f5;
+        padding: 10px 0;
+        z-index: 100;
+    }
+    
+    .grade-nav a {
+        display: inline-block;
+        padding: 8px 12px;
+        margin: 0 5px 5px 0;
+        background-color: #3498db;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        font-weight: bold;
+        text-align: center;
+    }
+    
+    .grade-nav a.active {
+        background-color: #2980b9;
+    }
+    
+    .timetable {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        overflow: hidden;
+        background-color: white;
+        margin-bottom: 20px;
+    }
+    
+    .header {
+        display: flex;
+        background-color: #3498db;
+        color: white;
+        font-weight: bold;
+        text-align: center;
+    }
+    
+    .header-item {
+        padding: 10px;
+        border-right: 1px solid #ddd;
+    }
+    
+    .header-period {
+        flex: 0 0 20%;
+        text-align: center;
+    }
+    
+    .row {
+        display: flex;
+        border-bottom: 1px solid #ddd;
+    }
+    
+    .row:last-child {
+        border-bottom: none;
+    }
+    
+    .period-cell {
+        flex: 0 0 20%;
+        padding: 10px;
+        font-weight: bold;
+        text-align: center;
+        border-right: 1px solid #ddd;
+        background-color: #f2f2f2;
+    }
+    
+    .course-container {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .course {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .course:last-child {
+        border-bottom: none;
+    }
+    
+    .room {
+        font-size: 0.85em;
+        color: #666;
+        margin-top: 5px;
+    }
+    
+    .empty-course {
+        padding: 10px;
+        background-color: #fafafa;
+        color: #999;
+        text-align: center;
+        font-style: italic;
+    }
+    
+    .comments {
+        margin: 10px 0;
+        padding: 10px;
+        background-color: #fff9c4;
+        border-left: 4px solid #ffd600;
+        border-radius: 3px;
+    }
+    
+    .comment {
+        margin-bottom: 5px;
+    }
+    
+    .comment:last-child {
+        margin-bottom: 0;
+    }
+    
+    .month-nav {
+        display: flex;
+        justify-content: center;
+        margin: 20px 0;
+    }
+    
+    .month-nav a {
+        display: inline-block;
+        padding: 8px 15px;
+        margin: 0 10px;
+        background-color: #3498db;
+        color: white;
+        text-decoration: none;
+        border-radius: 5px;
+        font-weight: bold;
+    }
+    
+    @media (max-width: 600px) {
+        body {
+            font-size: 14px;
+        }
+        
+        .container {
+            padding: 5px;
+        }
+        
+        h1 {
+            font-size: 1.3em;
+            margin: 8px 0;
+        }
+        
+        .grade-nav a {
+            padding: 6px 10px;
+            font-size: 0.9em;
+        }
+        
+        .header-item, .period-cell, .course {
+            padding: 8px 5px;
+        }
+    }
+    
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>2025年4/14(月) 時間割</h1>
+        
+        <div class="grade-nav">
+            <a href="#1" onclick="showGrade('1')">1年生</a>
+            <a href="#2" onclick="showGrade('2')">2年生</a>
+            <a href="#3" onclick="showGrade('3')">3年生</a>
+            <a href="#4" onclick="showGrade('4')">4年生</a>
+            <a href="#4_josan" onclick="showGrade('4_josan')">4年生助産</a>
+        </div>
+        
+        <div id="1" class="grade-section">
+            <h2>1年生</h2>
+            <div class="comments">
+                <div class="comment">選択科目教科書販売
+(予定)</div>
+            </div>
+            <div class="timetable">
+                <div class="header">
+                    <div class="header-item header-period">時限</div>
+                    <div class="header-item" style="flex: 1;">科目 / 教室</div>
+                </div>
+                <div class="row">
+                    <div class="period-cell">1限</div>
+                    <div class="course-container">
+                        <div class="empty-course">授業なし</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="period-cell">2限</div>
+                    <div class="course-container">
+                        <div class="empty-course">授業なし</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="period-cell">3限</div>
+                    <div class="course-container">
+                        <div class="course">生命科学
+                            <div class="room">101</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="period-cell">4限</div>
+                    <div class="course-container">
+                        <div class="course">疫学・保健統計学Ⅰ
+                            <div class="room">101</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="period-cell">5限</div>
+                    <div class="course-container">
+                        <div class="empty-course">授業なし</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="2" class="grade-section">
+            <h2>2年生</h2>
+            <div class="timetable">
+                <div class="header">
+                    <div class="header-item header-period">時限</div>
+                    <div class="header-item" style="flex: 1;">科目 / 教室</div>
+                </div>
+                <div class="row">
+                    <div class="period-cell">1限</div>
+                    <div class="course-container">
+                        <div class="empty-course">授業なし</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="period-cell">2限</div>
+                    <div class="course-container">
+                        <div class="empty-course">授業なし</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="period-cell">3限</div>
+                    <div class="course-container">
+                        <div class="course">生活援助論Ⅲ
+(AB)
+英語Ⅳ(CD)
+                            <div class="room">生活:201･202･基礎実 英語:301</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="period-cell">4限</div>
+                    <div class="course-container">
+                        <div class="course">生活援助論Ⅲ(AB)
+                            <div class="room">201･202･基礎実</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="period-cell">5限</div>
+                    <div class="course-container">
+                        <div class="empty-course">授業なし</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="3" class="grade-section">
+            <h2>3年生</h2>
+            <div class="timetable">
+                <div class="header">
+                    <div class="header-item header-period">時限</div>
+                    <div class="header-item" style="flex: 1;">科目 / 教室</div>
+                </div>
+                <div class="row">
+                    <div class="period-cell">1限</div>
+                    <div class="course-container">
+                        <div class="empty-course">授業なし</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="period-cell">2限</div>
+                    <div class="course-container">
+                        <div class="course">精神看護援助論
+                            <div class="room">大講義室</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="period-cell">3限</div>
+                    <div class="course-container">
+                        <div class="course">地域・在宅看護学実践論
+                            <div class="room">大講義室</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="period-cell">4限</div>
+                    <div class="course-container">
+                        <div class="course">地域・在宅看護学実践論
+                            <div class="room">大講義室</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="period-cell">5限</div>
+                    <div class="course-container">
+                        <div class="empty-course">授業なし</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="4" class="grade-section">
+            <h2>4年生</h2>
+            <div class="comments">
+                <div class="comment">選択科目教科書販売(仮)</div>
+            </div>
+            <div class="timetable">
+                <div class="header">
+                    <div class="header-item header-period">時限</div>
+                    <div class="header-item" style="flex: 1;">科目 / 教室</div>
+                </div>
+                <div class="row">
+                    <div class="period-cell">1限</div>
+                    <div class="course-container">
+                        <div class="course">高度先駆的医療看護Ⅱ(循環器病看護)
+                            <div class="room">301</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="period-cell">2限</div>
+                    <div class="course-container">
+                        <div class="course">感染症看護論
+                            <div class="room">301</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="period-cell">3限</div>
+                    <div class="course-container">
+                        <div class="empty-course">授業なし</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="period-cell">4限</div>
+                    <div class="course-container">
+                        <div class="empty-course">授業なし</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="period-cell">5限</div>
+                    <div class="course-container">
+                        <div class="empty-course">授業なし</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div id="4_josan" class="grade-section">
+            <h2>4年生助産</h2>
+            <div class="timetable">
+                <div class="header">
+                    <div class="header-item header-period">時限</div>
+                    <div class="header-item" style="flex: 1;">科目 / 教室</div>
+                </div>
+                <div class="row">
+                    <div class="period-cell">1限</div>
+                    <div class="course-container">
+                        <div class="empty-course">授業なし</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="period-cell">2限</div>
+                    <div class="course-container">
+                        <div class="empty-course">授業なし</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="period-cell">3限</div>
+                    <div class="course-container">
+                        <div class="course">助産学概論
+                            <div class="room">304</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="period-cell">4限</div>
+                    <div class="course-container">
+                        <div class="course">助産診断･技術学Ⅰ
+                            <div class="room">304</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="period-cell">5限</div>
+                    <div class="course-container">
+                        <div class="empty-course">授業なし</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="month-nav">
+            <a href="schedule_day_2025-04-13.html" >前日</a>
+            <a href="index.html">月間カレンダー</a>
+            <a href="schedule_day_2025-04-15.html" >翌日</a>
+        </div>
+    
+        <script>
+            // 初期表示時は最初の学年を表示
+            document.addEventListener('DOMContentLoaded', function() {
+                const gradeSections = document.querySelectorAll('.grade-section');
+                const gradeLinks = document.querySelectorAll('.grade-nav a');
+                
+                // 最初の学年以外を非表示
+                for (let i = 1; i < gradeSections.length; i++) {
+                    gradeSections[i].style.display = 'none';
+                }
+                
+                // 最初のリンクをアクティブに
+                if (gradeLinks.length > 0) {
+                    gradeLinks[0].classList.add('active');
+                }
+            });
+            
+            // 学年切り替え関数
+            function showGrade(gradeId) {
+                const gradeSections = document.querySelectorAll('.grade-section');
+                const gradeLinks = document.querySelectorAll('.grade-nav a');
+                
+                // すべての学年を非表示にし、リンクのアクティブ状態を解除
+                gradeSections.forEach(section => {
+                    section.style.display = 'none';
+                });
+                
+                gradeLinks.forEach(link => {
+                    link.classList.remove('active');
+                });
+                
+                // 選択された学年を表示し、リンクをアクティブに
+                document.getElementById(gradeId).style.display = 'block';
+                
+                // 対応するリンクをアクティブに
+                for (let i = 0; i < gradeLinks.length; i++) {
+                    if (gradeLinks[i].getAttribute('href') === '#' + gradeId) {
+                        gradeLinks[i].classList.add('active');
+                        break;
+                    }
+                }
+                
+                // スクロールを防止
+                return false;
+            }
+        </script>
+    </div>
+</body>
+</html>
