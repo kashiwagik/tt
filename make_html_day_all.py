@@ -80,8 +80,8 @@ def generate_html(date_str, schedule_data, grades, prev_date, next_date):
     # 日付の表示形式
     display_date = f"{month}月{day}日({weekday})"
     
-    prev_ref = f"../{year}{month:02d}/{year}{month:02d}{day:02d}.html"
-    next_ref = f"../{year}{month:02d}/{year}{month:02d}{day:02d}.html"
+    prev_ref = f"../{prev_date[0:6]}/{prev_date}.html"
+    next_ref = f"../{next_date[0:6]}/{next_date}.html"
     
     # CSSスタイルを定義
     css = """
@@ -92,6 +92,7 @@ def generate_html(date_str, schedule_data, grades, prev_date, next_date):
     }
     
     body {
+        touch-action: pan-y; /* 縦スクロールは許可、横はJSで扱う */
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         margin: 0;
         padding: 0;
@@ -273,10 +274,10 @@ def generate_html(date_str, schedule_data, grades, prev_date, next_date):
     if (Math.abs(deltaX) > threshold) {
       if (deltaX > 0) {
         // 右スワイプ
-        window.location.href = '""" + next_ref + """';
+        window.location.href = '""" + prev_ref + """';
       } else {
         // 左スワイプ
-        window.location.href = '""" + prev_ref + """';
+        window.location.href = '""" + next_ref + """';
       }
     }
   }
