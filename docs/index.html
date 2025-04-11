@@ -127,7 +127,7 @@
         }
     }
     </style>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -138,7 +138,11 @@
     </div>
         <div class="timetable" id="timetable">
             <div class="header cell">時限</div>
-            <div class="header cell">学年</div>
+            <div class="header cell">1年生</div>
+            <div class="header cell">2年生</div>
+            <div class="header cell">3年生</div>
+            <div class="header cell">4年生</div>
+            <div class="header cell">4年生助産</div>
             <!-- 時間割がここに表示されます -->
         </div>
     </div>
@@ -146,11 +150,10 @@
 <script>
 $(document).ready(function() {
     const urlParams = new URLSearchParams(window.location.search);
-    const grade = urlParams.get('grade');
     const day = urlParams.get('day');
 
-    if (!grade || !day) {
-        alert('URLにgradeとdayのパラメータが必要です。');
+    if (!day) {
+        alert('URLにdayのパラメータが必要です。');
         return;
     }
 
@@ -160,30 +163,24 @@ $(document).ready(function() {
     const nextDate = new Date(dateObj);
     nextDate.setDate(dateObj.getDate() + 1);
 
-    $('#prev-day').attr('href', `index.html?grade=${grade}&day=${formatDate(prevDate)}`);
-    $('#next-day').attr('href', `index.html?grade=${grade}&day=${formatDate(nextDate)}`);
+    $('#prev-day').attr('href', `index.html?day=${formatDate(prevDate)}`);
+    $('#next-day').attr('href', `index.html?day=${formatDate(nextDate)}`);
 
     $.getJSON('schedule.json', function(data) {
-        const scheduleData = data.filter(entry => entry.date === formatDate(dateObj, '-') && entry.grade === grade);
-        displaySchedule(scheduleData, grade);
-    });
-
-    function displaySchedule(scheduleData, grade) {
+        const grades = ["1年生", "2年生", "3年生", "4年生", "4年生助産"];
         const timetable = $('#timetable');
-        timetable.empty();
-        timetable.append('<div class="header cell">時限</div>');
-        timetable.append(`<div class="header cell">${grade}</div>`);
-
         for (let period = 1; period <= 5; period++) {
             timetable.append(`<div class="period cell">${period}限</div>`);
-            const entry = scheduleData.find(e => e.period === period);
-            if (entry) {
-                timetable.append(`<div class="cell">${entry.courses}<div class="room">${entry.room}</div></div>`);
-            } else {
-                timetable.append('<div class="cell empty-course">授業なし</div>');
-            }
+            grades.forEach(grade => {
+                const entry = data.find(e => e.date === formatDate(dateObj, '-') && e.grade === grade && e.period === period);
+                if (entry) {
+                    timetable.append(`<div class="cell">${entry.courses}<div class="room">${entry.room}</div></div>`);
+                } else {
+                    timetable.append('<div class="cell empty-course">授業なし</div>');
+                }
+            });
         }
-    }
+    });
 
     function formatDate(date, separator = '') {
         const year = date.getFullYear();
