@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1年生 週間時間割 2025年4月7日〜4月11日</title>
+    <style>
+
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+    }
+    
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        color: #333;
+        background-color: #fcfcfc;
+        font-size: 16px;
+    }
+    
+    .container {
+        max-width: 100%;
+        margin: 0 auto;
+        padding: 10px;
+    }
+    
+    h1 {
+        color: #2c3e50;
+        text-align: center;
+        margin: 10px 0;
+        font-size: 1.5em;
+    }
+
+    .timetable {
+        display: grid;
+        grid-template-columns: 10% repeat(5, 1fr);
+        grid-template-rows: 50px repeat(5, 1fr);
+        width: 100%;
+        max-width: 1024px;
+        margin: 0 auto;
+        margin-bottom: 20px;
+        gap: 1px;
+    }
+
+    .navigation {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+    }
+
+    .grade-selection {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin: 10px 0;
+        gap: 10px;
+    }
+
+    .grade-link {
+        padding: 5px 10px;
+        background-color: #3498db;
+        color: white;
+        text-decoration: none;
+        border-radius: 3px;
+    }
+
+    .grade-link.active {
+        background-color: #2c3e50;
+    }
+
+    .cell {
+        padding: 10px;
+        text-align: center;
+        vertical-align: middle;
+        height: 80px;
+        background-color: white;
+        
+        word-break: break-word;
+        white-space: normal;
+        overflow-wrap: break-word;
+    }
+
+    .period {
+        background-color: #f2f2f2;
+        font-weight: bold;
+        
+        /* 中央ぞろえ */
+        display: flex;
+        align-items: center; 
+        justify-content: center;
+    }
+
+    .header {
+        background-color: #3498db;
+        color: white;
+        font-weight: bold;
+        text-align: center;
+        padding: 5px;
+    }
+
+    .date-header {
+        font-size: 0.9em;
+    }
+
+    .empty-course {
+        color: #999;
+        background-color: #f3f3f3;
+    }
+
+    .room {
+        font-size: 0.8em;
+        color: #666;
+    }
+    
+    .comments {
+        margin: 10px 0;
+        padding: 10px;
+        background-color: #fff9c4;
+        border-left: 4px solid #ffd600;
+        border-radius: 3px;
+    }
+    
+    .comment {
+        margin-bottom: 5px;
+    }
+    
+    .comment:last-child {
+        margin-bottom: 0;
+    }
+    
+    @media (max-width: 600px) {
+        body {
+            font-size: 11px;
+        }
+        
+        .container {
+            padding: 5px;
+        }
+        
+        h1 {
+            font-size: 1.3em;
+            margin: 8px 0;
+        }
+        
+        .header, .course {
+            padding: 8px 5px;
+        }
+    }
+    
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>1年生 週間時間割</h1>
+        <h2 style="text-align: center; font-size: 1.2em; margin-bottom: 15px;">2025年4月7日〜4月11日</h2>
+        
+        <div class="grade-selection">
+            <a href="?grade=4年生助産&date=2025-04-07" class="grade-link">4年生助産</a>
+            <a href="?grade=4年生&date=2025-04-07" class="grade-link">4年生</a>
+            <a href="?grade=1年生&date=2025-04-07" class="grade-link active">1年生</a>
+            <a href="?grade=3年生&date=2025-04-07" class="grade-link">3年生</a>
+            <a href="?grade=2年生&date=2025-04-07" class="grade-link">2年生</a>
+
+        </div>
+        
+        <div class="navigation">
+            <a href="?grade=1年生&date=2025-03-31">前の週</a>
+            <a href="?grade=1年生&date=2025-04-14">次の週</a>
+        </div>
+        
+        <div class="timetable">
+            <div class="header cell">時限</div>
+            <div class="header cell">月<br /><span class="date-header">4/7</span></div>
+            <div class="header cell">火<br /><span class="date-header">4/8</span></div>
+            <div class="header cell">水<br /><span class="date-header">4/9</span></div>
+            <div class="header cell">木<br /><span class="date-header">4/10</span></div>
+            <div class="header cell">金<br /><span class="date-header">4/11</span></div>
+            <div class="period cell">1限</div>
+            <div class="cell empty-course">授業なし</div>
+            <div class="cell">定期健康診断
+                <div class="room">本館1F(101～103・自習室)</div>
+            </div>
+            <div class="cell">入学式
+                <div class="room">講堂</div>
+            </div>
+            <div class="cell">看護学概論
+                <div class="room">101</div>
+            </div>
+            <div class="cell">英語Ⅱ(AB)
+情報リテラシー(CD)
+                <div class="room">英A:202 英B:LL2 情報:201</div>
+            </div>
+            <div class="period cell">2限</div>
+            <div class="cell">メール･オンラインガイダンス
+                <div class="room">201</div>
+            </div>
+            <div class="cell">定期健康診断
+必修科目教科書販売
+                <div class="room">健診:本館1F(101～103・自習室)　販売:講堂前ロビー</div>
+            </div>
+            <div class="cell">図書館利用について
+Q＆A・同窓会
+                <div class="room">大講義室</div>
+            </div>
+            <div class="cell">生命科学ガイダンス
+                <div class="room">101</div>
+            </div>
+            <div class="cell">英語Ⅱ(CD)
+情報リテラシー(AB)
+                <div class="room">英C:202 英D:LL2 情報:201</div>
+            </div>
+            <div class="period cell">3限</div>
+            <div class="cell">1･2年合同グループワーク
+                <div class="room">アリーナ</div>
+            </div>
+            <div class="cell">キャリアガイダンス
+(入学式説明)
+                <div class="room">201</div>
+            </div>
+            <div class="cell empty-course">授業なし</div>
+            <div class="cell empty-course">授業なし</div>
+            <div class="cell">感染防止･ワクチン接種説明
+                <div class="room">201</div>
+            </div>
+            <div class="period cell">4限</div>
+            <div class="cell">学生保険受付
+                <div class="room">大講義室</div>
+            </div>
+            <div class="cell empty-course">授業なし</div>
+            <div class="cell empty-course">授業なし</div>
+            <div class="cell empty-course">授業なし</div>
+            <div class="cell">新入生歓迎会
+サークル紹介
+                <div class="room">アリーナ･大講義室</div>
+            </div>
+            <div class="period cell">5限</div>
+            <div class="cell empty-course">授業なし</div>
+            <div class="cell empty-course">授業なし</div>
+            <div class="cell empty-course">授業なし</div>
+            <div class="cell empty-course">授業なし</div>
+            <div class="cell empty-course">授業なし</div>
+        <div class="comments">
+            <div class="comment"><strong>4/11(金)</strong>: 前期履修登録期限</div>
+        </div>
+
+        </div>
+    </div>
+    
+    <script>
+        // URLパラメータから値を取得する関数
+        function getUrlParam(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+        
+        // フォーム送信時の処理
+        function handleSubmit(event) {
+            event.preventDefault();
+            const gradeSelect = document.getElementById('grade-select');
+            const dateInput = document.getElementById('date-input');
+            
+            window.location.href = `?grade=${gradeSelect.value}&date=${dateInput.value}`;
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('filter-form');
+            if (form) {
+                form.addEventListener('submit', handleSubmit);
+            }
+        });
+    </script>
+</body>
+</html>

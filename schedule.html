@@ -160,8 +160,8 @@ $(document).ready(function() {
     const nextDate = new Date(dateObj);
     nextDate.setDate(dateObj.getDate() + 1);
 
-    $('#prev-day').attr('href', `index.html?grade=${grade}&day=${formatDate(prevDate)}`);
-    $('#next-day').attr('href', `index.html?grade=${grade}&day=${formatDate(nextDate)}`);
+    $('#prev-day').attr('href', `schedule.html?grade=${grade}&day=${formatDate(prevDate)}`);
+    $('#next-day').attr('href', `schedule.html?grade=${grade}&day=${formatDate(nextDate)}`);
 
     $.getJSON('schedule.json', function(data) {
         const scheduleData = data.filter(entry => entry.date === formatDate(dateObj, '-') && entry.grade === grade);

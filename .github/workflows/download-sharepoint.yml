@@ -32,7 +32,7 @@ jobs:
       - name: Commit and Push
         run: |
           git config --global user.name "github-actions"
-          git config --global user.email "github-actions@github.com"
+          git config --global user.email "kashiwagik@adm.ncn.ac.jp"
           git add data/downloaded.xlsx
           git commit -m "Downloaded Excel from SharePoint"
           git push
