@@ -32,23 +32,6 @@ def get_schedule(timetable, grade, file_path, sheet_name):
             timetable.append(course)
     return timetable, courses, rooms
 
-file_path = 'first.xlsx'
-sheet_names = {
-    '2025年度(1年前期)': '1年生',
-    '2025年度(2年前期)': '2年生',
-    '2025年度(3年前期)': '3年生',
-    '2025年度(4年前期)': '4年生',
-    '2025年度(助産前期)': '4年生助産',
-}
-
-timetable = []
-for sheet_name, grade_name in sheet_names.items():
-    schedule, courses, rooms = get_schedule(timetable, grade_name, file_path, sheet_name)
-    
-    # コース情報を表示
-    print(f"コース情報 ({grade_name}):")
-    for course, count in courses.items():
-        print(f"  {course}: {count}回")
 
 def save_to_sqlite(timetable, db_path='schedule.db'):
     """
@@ -98,6 +81,7 @@ def save_to_sqlite(timetable, db_path='schedule.db'):
     
     print(f'{db_path}に保存しました。')
 
+
 def save_to_json(timetable, json_path='schedule.json'):
     """
     時間割データをJSON形式で保存する関数
@@ -111,6 +95,31 @@ def save_to_json(timetable, json_path='schedule.json'):
     
     print(f'{json_path}に保存しました。')
 
-# SQLiteとJSONに保存
-save_to_sqlite(timetable)
-save_to_json(timetable)
+
+def main(file_path):
+    sheet_names = {
+        '2025年度(1年前期)': '1年生',
+        '2025年度(2年前期)': '2年生',
+        '2025年度(3年前期)': '3年生',
+        '2025年度(4年前期)': '4年生',
+        '2025年度(助産前期)': '4年生助産',
+    }
+
+    timetable = []
+    for sheet_name, grade_name in sheet_names.items():
+        schedule, courses, rooms = get_schedule(timetable, grade_name, file_path, sheet_name)
+        
+        # コース情報を表示
+        print(f"コース情報 ({grade_name}):")
+        for course, count in courses.items():
+            print(f"  {course}: {count}回")
+            
+    # SQLiteとJSONに保存
+    # save_to_sqlite(timetable)
+    save_to_json(timetable, json_path='docs/schedule.json')
+
+
+if __name__ == "__main__":
+    excel_path = '【2025・04～09月 前期】全学年時間割.xlsx'
+    main(excel_path)
+    
