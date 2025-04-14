@@ -1,8 +1,9 @@
-
 import pandas as pd
 import json
 from collections import defaultdict
 import sqlite3
+import os
+from datetime import datetime
 
 # 以下のエラー抑制のための設定
 # FutureWarning: Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. 
@@ -126,16 +127,26 @@ def add_schedule_to_josan(timetable):
 
     return timetable
 
+def make_info_json(file_path, info_json_path):
+    # ファイルの更新時刻を取得
+    file_stat = os.stat(file_path)
+    modified_time = datetime.fromtimestamp(file_stat.st_mtime).strftime('%Y-%m-%d %H:%M:%S')
+
+    # 更新時刻をinfo.jsonに書き込む
+    info_data = {"file_path": file_path, "last_modified": modified_time}
+    with open(info_json_path, 'w', encoding='utf-8') as f:
+        json.dump(info_data, f, ensure_ascii=False, indent=2)
+
+    print(f'{info_json_path}に更新時刻を保存しました。')
     
-def main(file_path, sheet_names, json_path):
+def main(file_path, sheet_names, json_path, info_json_path):
+
+    # info.jsonを作成
+    make_info_json(file_path, info_json_path)
+
     for sheet_name, grade_name in sheet_names.items():
         print(f"コース情報 ({grade_name}):")
         timetable, courses, rooms = get_schedule(file_path, sheet_name, grade_name)
-        
-        # コース情報を表示
-        # print(f"コース情報 ({grade_name}):")
-        # for course, count in courses.items():
-        #     print(f"  {course}: {count}回")
     
     # 4年生の時間割を4年生助産に追加
     timetable = add_schedule_to_josan(timetable)
@@ -160,6 +171,8 @@ if __name__ == "__main__":
         '2025年度(D23前期)': 'D23',
     }
     json_path = 'docs/schedule.json'
+    # info.jsonのパスを指定
+    info_json_path = 'docs/info.json'
 
-    main(excel_path, sheet_names, json_path)
-    
+    main(excel_path, sheet_names, json_path, info_json_path)
+

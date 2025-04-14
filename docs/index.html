@@ -314,8 +314,16 @@ $(document).ready(function() {
         const day = ('0' + date.getDate()).slice(-2);
         return `${year}${separator}${month}${separator}${day}`;
     }
+
+    // info.jsonから最終更新時刻を取得して表示
+    $.getJSON('info.json', function(infoData) {
+        if (infoData && infoData.last_modified) {
+            $('#last-modified').text('最終更新時刻: ' + infoData.last_modified);
+        }
+    });
 });
 </script>
 
+<div id="last-modified" style="text-align: center; margin-top: 20px; color: #666; font-size: 0.9em;"></div>
 </body>
 </html>
