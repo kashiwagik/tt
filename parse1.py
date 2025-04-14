@@ -1,11 +1,17 @@
 
 import pandas as pd
-import sqlite3
 import json
 from collections import defaultdict
+import sqlite3
+
+# 以下のエラー抑制のための設定
+# FutureWarning: Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. 
 pd.set_option('future.no_silent_downcasting', True)
 
-def get_schedule(timetable, grade, file_path, sheet_name):
+
+def get_schedule(file_path, sheet_name, grade):
+    timetable = []
+
     # Excelファイルの指定シートを読み込む
     df = pd.read_excel(file_path, sheet_name=sheet_name)
 
@@ -96,30 +102,64 @@ def save_to_json(timetable, json_path='schedule.json'):
     print(f'{json_path}に保存しました。')
 
 
-def main(file_path):
+def add_schedule_to_josan(timetable):
+    """
+    助産前期の時間割を4年生の時間割に追加する関数
+    """
+    forth_grade = {}
+    josan_course = {}
+
+    # それぞれの時間割を辞書に変換
+    for course in timetable:
+        if course['grade'] == '4年生':
+            forth_grade[course["date"] + str(course["period"])] = course
+        elif course['grade'] == '4年生助産':
+            josan_course[course["date"] + str(course["period"])] = course
+
+    # 4年生の時間割を助産前期の時間割に追加
+    for key, course in forth_grade.items():
+        # すでに助産前期の時間割が存在する場合はスキップ
+        if key in josan_course:
+            continue
+        course['grade'] = '4年生助産'
+        timetable.append(course)
+
+    return timetable
+
+    
+def main(file_path, sheet_names, json_path):
+    for sheet_name, grade_name in sheet_names.items():
+        print(f"コース情報 ({grade_name}):")
+        timetable, courses, rooms = get_schedule(file_path, sheet_name, grade_name)
+        
+        # コース情報を表示
+        # print(f"コース情報 ({grade_name}):")
+        # for course, count in courses.items():
+        #     print(f"  {course}: {count}回")
+    
+    # 4年生の時間割を4年生助産に追加
+    timetable = add_schedule_to_josan(timetable)
+
+    # SQLite
+    # save_to_sqlite(timetable)
+    # JSONに保存
+    save_to_json(timetable, json_path)
+
+
+if __name__ == "__main__":
+    excel_path = '【2025・04～09月 前期】全学年時間割.xlsx'
     sheet_names = {
         '2025年度(1年前期)': '1年生',
         '2025年度(2年前期)': '2年生',
         '2025年度(3年前期)': '3年生',
         '2025年度(4年前期)': '4年生',
         '2025年度(助産前期)': '4年生助産',
+        '2025年度(M1前期)': 'M1',
+        '2025年度(M2前期)': 'M2',
+        '2025年度(D1前期)': 'D1',
+        '2025年度(D23前期)': 'D23',
     }
+    json_path = 'docs/schedule.json'
 
-    timetable = []
-    for sheet_name, grade_name in sheet_names.items():
-        schedule, courses, rooms = get_schedule(timetable, grade_name, file_path, sheet_name)
-        
-        # コース情報を表示
-        print(f"コース情報 ({grade_name}):")
-        for course, count in courses.items():
-            print(f"  {course}: {count}回")
-            
-    # SQLiteとJSONに保存
-    # save_to_sqlite(timetable)
-    save_to_json(timetable, json_path='docs/schedule.json')
-
-
-if __name__ == "__main__":
-    excel_path = '【2025・04～09月 前期】全学年時間割.xlsx'
-    main(excel_path)
+    main(excel_path, sheet_names, json_path)
     
