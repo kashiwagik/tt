@@ -22,7 +22,7 @@
     }
     
     .container {
-        max-width: 100%;
+        max-width: 1024px;
         margin: 0 auto;
         padding: 10px;
     }
@@ -174,13 +174,15 @@
     </div>
     <div class="container">
         <h2 id="page-title">スケジュール</h2>
-    <div class="navigation">
-        <a href="#" id="prev-day">前の日</a>
-        <a href="#" id="next-day">次の日</a>
-    </div>
+        <div class="navigation">
+            <a href="#" id="prev-day">前の日</a>
+            <a href="#" id="next-day">次の日</a>
+        </div>
         <div class="timetable" id="timetable">
             <!-- 時間割がここに表示されます -->
         </div>
+        <div id="last-modified" style="text-align: right; margin-top: 20px; color: #666; font-size: 0.9em;"></div>
+
     </div>
     
 <script>
@@ -324,6 +326,5 @@ $(document).ready(function() {
 });
 </script>
 
-<div id="last-modified" style="text-align: right; margin-top: 20px; color: #666; font-size: 0.9em;"></div>
 </body>
 </html>
