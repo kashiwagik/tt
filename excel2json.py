@@ -1,9 +1,9 @@
+from datetime import datetime
+import os
 import pandas as pd
 import json
 from collections import defaultdict
 import sqlite3
-import os
-from datetime import datetime
 
 # 以下のエラー抑制のための設定
 # FutureWarning: Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. 
@@ -122,8 +122,12 @@ def add_schedule_to_josan(timetable):
         # すでに助産前期の時間割が存在する場合はスキップ
         if key in josan_course:
             continue
-        course['grade'] = '4年生助産'
-        timetable.append(course)
+        # 卒業研究は除外
+        #if course['courses'].startswith('卒業研究'):
+        #    continue
+        new_course = course.copy()
+        new_course['grade'] = '4年生助産'
+        timetable.append(new_course)
 
     return timetable
 
@@ -139,22 +143,24 @@ def make_info_json(file_path, info_json_path):
 
     print(f'{info_json_path}に更新時刻を保存しました。')
     
+    
 def main(file_path, sheet_names, json_path, info_json_path):
-
     # info.jsonを作成
     make_info_json(file_path, info_json_path)
 
+    all_timetable = []
     for sheet_name, grade_name in sheet_names.items():
         print(f"コース情報 ({grade_name}):")
         timetable, courses, rooms = get_schedule(file_path, sheet_name, grade_name)
-    
+        all_timetable.extend(timetable)
+
     # 4年生の時間割を4年生助産に追加
-    timetable = add_schedule_to_josan(timetable)
+    all_timetable = add_schedule_to_josan(all_timetable)
 
     # SQLite
     # save_to_sqlite(timetable)
     # JSONに保存
-    save_to_json(timetable, json_path)
+    save_to_json(all_timetable, json_path)
 
 
 if __name__ == "__main__":
