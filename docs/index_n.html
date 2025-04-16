@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>大学時間割システム</title>
+    <title>時間割</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -53,6 +53,10 @@
             cursor: pointer;
             padding: 0.25rem;
             margin-right: 1rem;
+        }
+
+        .menu-button a {
+            color: inherit;
         }
 
         .topbar-title {
@@ -337,6 +341,7 @@
             position: sticky;
             left: 0;
             top: 0;
+            font-weight: normal;
             z-index: 3; /* Above both sticky row and column */
         }
 
@@ -410,16 +415,28 @@
 
         /* レスポンシブ対応 */
         @media (max-width: 768px) {
-            body {
+            th, td {
+                min-width: 80px; /* Adjust min-width for smaller screens */
+            }
+
+            th {
                 font-size: 14px;
             }
 
-            .container {
-                padding: 0.25rem;
+            .time-col {
+                width: 40px;
+                min-width: 40px;
+                font-size: 14px;
             }
 
+            .empty-td {
+                min-height: 40px;
+            }
+            
             .mode-option {
                 padding: 0.375rem 1rem;
+                font-size: 14px;
+                line-height: 23px;
             }
 
             .date-display {
@@ -431,36 +448,7 @@
                 width: 1.5rem;
                 height: 1.5rem;
             }
-
-            th, td {
-                padding: 0.25rem;
-                font-size: 0.75rem;
-                min-width: 80px; /* Adjust min-width for smaller screens */
-            }
-
-            .time-col {
-                width: 40px;
-                min-width: 40px;
-            }
-
-            .class-cell {
-                padding: 0.125rem;
-            }
-
-            .class-name {
-                font-size: 0.75rem;
-            }
-
-            .class-room {
-                font-size: 0.625rem;
-            }
-
-            .class-comment {
-                font-size: 0.625rem;
-            }
-            .empty-td {
-                min-height: 40px;
-            }
+            
         }
     </style>
 </head>
@@ -468,9 +456,9 @@
     <!-- トップバー -->
     <div class="topbar">
         <button class="menu-button" id="menu-toggle">
-            <i class="fas fa-bars"></i>
+            <a href="?"><i class="fas fa-bars"></i></a>
         </button>
-        <div class="topbar-title">時間割システム</div>
+        <div class="topbar-title">時間割</div>
         <!-- Icons from index.html could be placed here if needed -->
     </div>
 
@@ -547,7 +535,7 @@
                         <div class="dropdown-item" data-value="2年生">2年生</div>
                         <div class="dropdown-item" data-value="3年生">3年生</div>
                         <div class="dropdown-item" data-value="4年生">4年生</div>
-                        <div class="dropdown-item" data-value="4年生助産">4年助産</div>
+                        <div class="dropdown-item" data-value="4年助産">4年助産</div>
                         <div class="dropdown-item" data-value="M1">M1</div>
                         <div class="dropdown-item" data-value="M2">M2</div>
                         <div class="dropdown-item" data-value="D1">D1</div>
@@ -587,15 +575,20 @@
         let currentMode = 'day'; // 'day' or 'week'
         let currentDate = new Date();
         let currentGrade = null; // For week view
+        let currentTarget = 'undergrad'; // 'undergrad' or 'graduate'
         let scheduleData = [];
         const weekdays = ['日', '月', '火', '水', '木', '金', '土'];
-        const grades = ["1年生", "2年生", "3年生", "4年生", "4年生助産"]; // 学部のみ
+        const undergradGrades = ["1年生", "2年生", "3年生", "4年生", "4年助産"];
+        const graduateGrades = ["M1", "M2", "D1", "D2/3"];
+        const allGrades = undergradGrades.concat(graduateGrades); // Combine all grades
+        let activeGrades = undergradGrades; // For DAY view column headers
 
         // --- Initialization ---
         function initialize() {
-            parseUrlParams();
+            // parseUrlParams(); // We'll adjust this later if needed for target param
             loadTimetableData().then(() => {
                 setupEventListeners();
+                updateGradeDropdown(); // Populate week dropdown with all grades
                 updateView();
                 loadInfoData(); // Load last modified time
             }).catch(error => {
@@ -603,41 +596,10 @@
                 $('#timetable > tbody').html('<tr><td colspan="6">時間割データの読み込みに失敗しました。</td></tr>');
                 $('#current-date').text('エラー');
             });
-        }
+        } // Add missing closing brace for initialize function
 
-        function parseUrlParams() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const typeParam = urlParams.get('type');
-            const dayParam = urlParams.get('day'); // YYYYMMDD format
-            const gradeParam = urlParams.get('grade');
-
-            if (dayParam && dayParam.match(/^\d{8}$/)) {
-                currentDate = new Date(dayParam.slice(0, 4), parseInt(dayParam.slice(4, 6)) - 1, dayParam.slice(6, 8));
-            } else {
-                currentDate = new Date(); // Default to today
-            }
-
-            // Set initial mode based on URL or default to 'day'
-            currentMode = (typeParam === 'week' && gradeParam) ? 'week' : 'day';
-
-            if (currentMode === 'week') {
-                currentGrade = grades.includes(gradeParam) ? gradeParam : grades[0]; // Default to first grade if invalid
-                $('.mode-option[data-mode="week"]').addClass('active');
-                $('.mode-option[data-mode="day"]').removeClass('active');
-                $('#week-dropdown').removeClass('hidden');
-                $('#day-dropdown').addClass('hidden');
-                $('#week-dropdown-toggle').text(currentGrade);
-                // Set active state in dropdown
-                $('#week-dropdown-menu .dropdown-item').removeClass('active');
-                $(`#week-dropdown-menu .dropdown-item[data-value="${currentGrade}"]`).addClass('active');
-            } else {
-                currentMode = 'day'; // Ensure mode is 'day' if week conditions not met
-                $('.mode-option[data-mode="day"]').addClass('active');
-                $('.mode-option[data-mode="week"]').removeClass('active');
-                $('#week-dropdown').addClass('hidden'); // Hide week dropdown
-                $('#day-dropdown').removeClass('hidden'); // Show day dropdown
-            }
-        }
+        // TODO: Enhance parseUrlParams to handle 'target' if needed
+        // function parseUrlParams() { ... }
 
         function loadTimetableData() {
             return $.getJSON('schedule.json')
@@ -669,8 +631,8 @@
         // --- Event Listeners ---
         function setupEventListeners() {
             // Menu
-            $('#menu-toggle').on('click', () => {$('#sidemenu, #overlay').addClass('active');});
-            $('#menu-close, #overlay').on('click', () => {$('#sidemenu, #overlay').removeClass('active');});
+            // $('#menu-toggle').on('click', () => {$('#sidemenu, #overlay').addClass('active');});
+            // $('#menu-close, #overlay').on('click', () => {$('#sidemenu, #overlay').removeClass('active');});
             $('#goto-today').on('click', () => {
                 currentDate = new Date();
                 updateView();
@@ -681,7 +643,7 @@
                 closeMenu();
             });
             $('#view-week').on('click', () => {
-                if (!currentGrade) currentGrade = grades[0]; // Default grade if none selected
+                if (!currentGrade) currentGrade = activeGrades[0]; // Default grade based on current target
                 switchMode('week');
                 closeMenu();
             });
@@ -713,6 +675,25 @@
                 updateView(); // Update timetable for the selected grade
             });
 
+            // Day Dropdown Item Selection (Target: Undergrad/Graduate)
+            $('#day-dropdown-menu .dropdown-item').on('click', function() {
+                currentTarget = $(this).data('value');
+                $('#day-dropdown-toggle').text($(this).text());
+                $('#day-dropdown-menu .dropdown-item').removeClass('active');
+                $(this).addClass('active');
+                $('.dropdown-menu').removeClass('show'); // Close dropdown
+
+                // Update activeGrades for DAY view based on selection
+                activeGrades = (currentTarget === 'graduate') ? graduateGrades : undergradGrades;
+
+                // Only update the view, DO NOT change week dropdown or currentGrade
+                if (currentMode === 'day') {
+                    updateView(); // Re-render day view with new columns
+                }
+                // If in week mode, changing day-dropdown target has no immediate effect
+            });
+
+
             // Close dropdown when clicking outside
             $(document).on('click', function(e) {
                 if (!$(e.target).closest('.custom-dropdown').length) {
@@ -740,20 +721,61 @@
             $(`.mode-option[data-mode="${mode}"]`).addClass('active');
 
             if (mode === 'day') {
-                $('#week-dropdown').addClass('hidden'); // Hide week dropdown
-                $('#day-dropdown').removeClass('hidden'); // Show day dropdown
-                currentGrade = null; // Reset grade selection
+                $('#week-dropdown').addClass('hidden');
+                $('#day-dropdown').removeClass('hidden');
+                // Update activeGrades based on the currentTarget for Day view
+                activeGrades = (currentTarget === 'graduate') ? graduateGrades : undergradGrades;
             } else { // week
-                $('#week-dropdown').removeClass('hidden'); // Show week dropdown
+                $('#week-dropdown').removeClass('hidden');
                 $('#day-dropdown').addClass('hidden');
-                if (!currentGrade) {
-                    currentGrade = grades[0]; // Default to first grade if none selected
+                // Ensure a grade is selected for week view, using the full list
+                if (!currentGrade || !allGrades.includes(currentGrade)) {
+                    currentGrade = allGrades[0]; // Default to the first grade in the combined list
                     $('#week-dropdown-toggle').text(currentGrade);
-                    $('#week-dropdown-menu .dropdown-item').removeClass('active');
-                    $(`#week-dropdown-menu .dropdown-item[data-value="${currentGrade}"]`).addClass('active');
+                    // Ensure the dropdown item is marked active (updateGradeDropdown handles this)
+                } else {
+                     $('#week-dropdown-toggle').text(currentGrade); // Keep valid selection
                 }
             }
             updateView();
+        }
+
+        // Function to update the week dropdown options (always show all grades)
+        function updateGradeDropdown() {
+            // activeGrades = (target === 'graduate') ? graduateGrades : undergradGrades; // No longer needed here
+            const $menu = $('#week-dropdown-menu');
+            $menu.empty(); // Clear existing options
+
+            allGrades.forEach(grade => { // Use allGrades here
+                const $item = $('<div></div>')
+                    .addClass('dropdown-item')
+                    .attr('data-value', grade)
+                    .text(grade);
+                if (grade === currentGrade) {
+                    $item.addClass('active'); // Mark as active if it's the current selection
+                }
+                // Re-attach click listener for newly added items
+                $item.on('click', function() {
+                    currentGrade = $(this).data('value');
+                    $('#week-dropdown-toggle').text($(this).text());
+                    $('#week-dropdown-menu .dropdown-item').removeClass('active');
+                    $(this).addClass('active');
+                    $('.dropdown-menu').removeClass('show');
+                    updateView();
+                });
+                $menu.append($item);
+            });
+
+             // Update the toggle text if no grade is selected or the selected one is no longer valid
+            if (!currentGrade || !activeGrades.includes(currentGrade)) {
+                 currentGrade = allGrades[0]; // Default to first grade from the combined list
+                 $('#week-dropdown-toggle').text(currentGrade);
+                 // Mark the first item as active visually in the dropdown
+                 $menu.find('.dropdown-item').first().addClass('active');
+            } else {
+                 // Ensure the correct item is marked active if currentGrade is valid
+                 $menu.find(`.dropdown-item[data-value="${currentGrade}"]`).addClass('active');
+            }
         }
 
         function navigateDate(direction) {
@@ -798,11 +820,9 @@
         }
 
         function displayDaySchedule($thead, $tbody) {
-            // Build header row
+            // Build header row based on the current target (undergrad/graduate)
             let headerHtml = '<tr><th class="time-col">時限</th>';
-            grades.forEach(grade => {
-                // Link to week view for this grade on this date
-                const weekLinkDate = formatDate(currentDate);
+            activeGrades.forEach(grade => { // Use activeGrades here
                 headerHtml += `<th>${grade}</th>`;
             });
             headerHtml += '</tr>';
@@ -812,10 +832,11 @@
             const dateStr = formatDate(currentDate, '-');
             for (let period = 1; period <= 5; period++) {
                 let rowHtml = `<tr><td class="time-col">${period}限</td>`;
-                grades.forEach(grade => {
+                activeGrades.forEach(grade => { // Use activeGrades here
+                    // Find entry matching date, period, and the specific grade from the active list
                     const entry = scheduleData.find(e => e.date === dateStr && e.grade === grade && e.period === period);
                     if (entry && entry.courses) {
-                        rowHtml += `<td style="class-td"><div class="class-cell"><div class="class-name">${entry.courses}</div><div class="class-room">${entry.room || ''}</div></div></td>`;
+                        rowHtml += `<td class="class-td"><div class="class-cell"><div class="class-name">${entry.courses}</div><div class="class-room">${entry.room || ''}</div></div></td>`;
                     } else {
                         rowHtml += '<td class="empty-td">&nbsp;</td>';
                     }
@@ -826,6 +847,21 @@
         }
 
         function displayWeekSchedule($thead, $tbody) {
+            // Ensure currentGrade is set using the combined list
+             if (!currentGrade || !allGrades.includes(currentGrade)) {
+                 console.warn("No valid grade selected for week view. Defaulting...");
+                 if (allGrades.length > 0) {
+                     currentGrade = allGrades[0]; // Default to the first in the combined list
+                     $('#week-dropdown-toggle').text(currentGrade);
+                     // Ensure dropdown reflects this default
+                     $('#week-dropdown-menu .dropdown-item').removeClass('active');
+                     $(`#week-dropdown-menu .dropdown-item[data-value="${currentGrade}"]`).addClass('active');
+                 } else {
+                     $tbody.html('<tr><td colspan="6">表示できる学年がありません。</td></tr>');
+                     return;
+                 }
+            }
+
             const monday = getMondayOfWeek(new Date(currentDate)); // Use a copy
             const dates = [];
             const dateObjs = [];
@@ -841,7 +877,7 @@
             dateObjs.forEach(dateObj => {
                 const dayLinkDate = formatDate(dateObj);
                 const weekday = weekdays[dateObj.getDay()];
-                headerHtml += `<th><span class="date-header">${dateObj.getMonth() + 1}月${dateObj.getDate()}日</span></th>`;
+                headerHtml += `<th><span class="date-header">${dateObj.getMonth() + 1}月${dateObj.getDate()}日<br/>${weekday}</span></th>`;
             });
             headerHtml += '</tr>';
             $thead.html(headerHtml);

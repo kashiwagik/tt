@@ -114,7 +114,7 @@ def add_schedule_to_josan(timetable):
     for course in timetable:
         if course['grade'] == '4年生':
             forth_grade[course["date"] + str(course["period"])] = course
-        elif course['grade'] == '4年生助産':
+        elif course['grade'] == '4年助産':
             josan_course[course["date"] + str(course["period"])] = course
 
     # 4年生の時間割を助産前期の時間割に追加
@@ -126,7 +126,7 @@ def add_schedule_to_josan(timetable):
         #if course['courses'].startswith('卒業研究'):
         #    continue
         new_course = course.copy()
-        new_course['grade'] = '4年生助産'
+        new_course['grade'] = '4年助産'
         timetable.append(new_course)
 
     return timetable
@@ -170,7 +170,7 @@ if __name__ == "__main__":
         '2025年度(2年前期)': '2年生',
         '2025年度(3年前期)': '3年生',
         '2025年度(4年前期)': '4年生',
-        '2025年度(助産前期)': '4年生助産',
+        '2025年度(助産前期)': '4年助産',
         '2025年度(M1前期)': 'M1',
         '2025年度(M2前期)': 'M2',
         '2025年度(D1前期)': 'D1',
