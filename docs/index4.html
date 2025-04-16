@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>大学時間割システム</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #4899D8;
+            --primary-dark: #3780B9;
+            --primary-light: #7AB6E5;
+            --primary-lightest: #E5F1FA;
+            --secondary-color: #f8fafc;
+            --border-color: #e2e8f0;
+            --text-color: #1e293b;
+            --text-light: #64748b;
+            --cell-highlight: #f1f5f9;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        body {
+            color: var(--text-color);
+            background-color: #f1f5f9;
+            line-height: 1.5;
+        }
+
+        /* トップバー */
+        .topbar {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.5rem 1rem;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .menu-button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.25rem;
+            cursor: pointer;
+            padding: 0.25rem;
+            margin-right: 1rem;
+        }
+
+        .topbar-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            flex-grow: 1;
+            text-align: center;
+        }
+
+        /* サイドメニュー */
+        .sidemenu {
+            position: fixed;
+            top: 0;
+            left: -250px;
+            width: 250px;
+            height: 100%;
+            background-color: white;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+            z-index: 200;
+            transition: left 0.3s ease;
+            padding: 1rem 0;
+        }
+
+        .sidemenu.active {
+            left: 0;
+        }
+
+        .sidemenu-close {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: none;
+            border: none;
+            font-size: 1.25rem;
+            cursor: pointer;
+            color: var(--text-light);
+        }
+
+        .sidemenu-header {
+            padding: 0 1rem 1rem;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .sidemenu-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .sidemenu-list {
+            list-style: none;
+        }
+
+        .sidemenu-item {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+        }
+
+        .sidemenu-item:hover {
+            background-color: var(--primary-lightest);
+        }
+
+        .sidemenu-icon {
+            margin-right: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        /* メインコンテナ */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0.5rem;
+        }
+
+        header {
+            background-color: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            margin-bottom: 0.5rem;
+            padding: 0.5rem;
+        }
+
+        h1 {
+            color: var(--primary-dark);
+            text-align: center;
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        /* 日付セレクター（中央配置） */
+        .date-selector {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0.5rem auto;
+            width: 100%;
+            max-width: 500px; /* 幅を広げる */
+        }
+
+        .date-display {
+            font-size: 1.25rem;
+            font-weight: bold;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            background-color: var(--primary-lightest);
+            color: var(--primary-dark);
+            text-align: center;
+            margin: 0 0.5rem;
+            flex-grow: 1;
+            white-space: nowrap; /* 日付を折り返さない */
+        }
+
+        .date-nav button {
+            width: 2rem;
+            height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .date-nav button:hover {
+            background-color: var(--primary-dark);
+        }
+
+        /* 表示切替コントロール */
+        .view-controls {
+            display: flex;
+            gap: 0.5rem;
+            margin: 0.5rem 0;
+        }
+
+        /* DAY/WEEK切替 */
+        .mode-selector {
+            display: flex;
+            border: 2px solid var(--primary-color);
+            border-radius: 2rem;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .mode-option {
+            padding: 0.5rem 1.5rem;
+            background-color: white;
+            color: var(--primary-color);
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .mode-option.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        /* ドロップダウン */
+        .custom-dropdown {
+            position: relative;
+            flex-grow: 1;
+        }
+
+        .dropdown-toggle {
+            width: 100%;
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--primary-color);
+            border-radius: 0.25rem;
+            background-color: var(--primary-lightest);
+            color: var(--primary-color);
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            position: relative;
+        }
+
+        .dropdown-toggle::after {
+            content: "";
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 6px solid var(--primary-color);
+        }
+
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: white;
+            border: 1px solid var(--border-color);
+            border-radius: 0.25rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+            display: none;
+        }
+
+        .dropdown-menu.show {
+            display: block;
+        }
+
+        .dropdown-item {
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+        }
+
+        .dropdown-item:hover {
+            background-color: var(--primary-lightest);
+        }
+
+        .dropdown-item.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        /* 時間割コンテナ */
+        .timetable-container {
+            position: relative;
+            margin-top: 0.5rem;
+        }
+
+        .update-info {
+            position: absolute;
+            top: -1.5rem;
+            right: 0;
+            font-size: 0.75rem;
+            color: var(--text-light);
+        }
+
+        .timetable-wrapper {
+            background-color: white;
+            border-radius: 0.5rem;
+            overflow: hidden;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+        }
+        
+        /* 広い画面用のスタイル調整 */
+        @media (min-width: 1200px) {
+            .timetable-wrapper {
+                overflow-x: auto; /* 横スクロール可能に */
+            }
+            
+            /* 時間割セルのサイズを調整 */
+            th, td {
+                min-width: 110px; /* セルの最小幅を設定 */
+            }
+            
+            .time-col {
+                position: sticky;
+                left: 0;
+                z-index: 1;
+                background-color: var(--primary-lightest);
+            }
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid var(--border-color);
+            padding: 0.5rem;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        th {
+            background-color: var(--primary-lightest);
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+
+        .time-col {
+            width: 60px;
+            background-color: var(--primary-lightest);
+            color: var(--primary-dark);
+            font-weight: 600;
+        }
+
+        .class-cell {
+            padding: 0.25rem;
+            border-radius: 0.25rem;
+        }
+
+        .empty-cell {
+            background-color: var(--cell-highlight);
+            height: 100%;
+            width: 100%;
+        }
+
+        .class-name {
+            font-weight: bold;
+            font-size: 0.875rem;
+        }
+
+        .class-room {
+            font-size: 0.75rem;
+            color: var(--text-light);
+        }
+
+        .class-comment {
+            font-size: 0.75rem;
+            color: var(--text-light);
+            font-style: italic;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 150;
+            display: none;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+
+        /* レスポンシブ対応 */
+        @media (max-width: 768px) {
+            body {
+                font-size: 14px;
+            }
+
+            .container {
+                padding: 0.25rem;
+            }
+
+            .mode-option {
+                padding: 0.375rem 1rem;
+            }
+
+            .date-display {
+                font-size: 1rem;
+                padding: 0.25rem 0.5rem;
+            }
+
+            .date-nav button {
+                width: 1.5rem;
+                height: 1.5rem;
+            }
+
+            th, td {
+                padding: 0.25rem;
+                font-size: 0.75rem;
+            }
+
+            .time-col {
+                width: 30px;
+            }
+
+            .class-cell {
+                padding: 0.125rem;
+            }
+
+            .class-name {
+                font-size: 0.75rem;
+            }
+
+            .class-room {
+                font-size: 0.625rem;
+            }
+
+            .class-comment {
+                font-size: 0.625rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- トップバー -->
+    <div class="topbar">
+        <button class="menu-button" id="menu-toggle">
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="topbar-title">時間割システム</div>
+    </div>
+    
+    <!-- サイドメニュー -->
+    <div class="sidemenu" id="sidemenu">
+        <button class="sidemenu-close" id="menu-close">
+            <i class="fas fa-times"></i>
+        </button>
+        <div class="sidemenu-header">
+            <div class="sidemenu-title">メニュー</div>
+        </div>
+        <ul class="sidemenu-list">
+            <li class="sidemenu-item">
+                <i class="fas fa-home sidemenu-icon"></i>ホーム
+            </li>
+            <li class="sidemenu-item">
+                <i class="fas fa-calendar-alt sidemenu-icon"></i>時間割
+            </li>
+            <li class="sidemenu-item">
+                <i class="fas fa-book sidemenu-icon"></i>科目一覧
+            </li>
+            <li class="sidemenu-item">
+                <i class="fas fa-map-marker-alt sidemenu-icon"></i>教室情報
+            </li>
+            <li class="sidemenu-item">
+                <i class="fas fa-info-circle sidemenu-icon"></i>使い方
+            </li>
+        </ul>
+    </div>
+    
+    <!-- オーバーレイ -->
+    <div class="overlay" id="overlay"></div>
+    
+    <div class="container">
+        <header>
+            <!-- 日付セレクター（中央配置） -->
+            <div class="date-selector">
+                <div class="date-nav">
+                    <button id="prev-date"><i class="fas fa-chevron-left"></i></button>
+                </div>
+                <div class="date-display" id="current-date">2025年4月16日（水）</div>
+                <div class="date-nav">
+                    <button id="next-date"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+            
+            <!-- 表示切替コントロール -->
+            <div class="view-controls">
+                <!-- DAY/WEEK切替 -->
+                <div class="mode-selector">
+                    <div class="mode-option active" data-mode="day">DAY</div>
+                    <div class="mode-option" data-mode="week">WEEK</div>
+                </div>
+                
+                <!-- 表示対象ドロップダウン（DAYモード用） -->
+                <div class="custom-dropdown" id="day-dropdown">
+                    <div class="dropdown-toggle" id="day-dropdown-toggle">学部</div>
+                    <div class="dropdown-menu" id="day-dropdown-menu">
+                        <div class="dropdown-item active" data-value="undergrad">学部</div>
+                        <div class="dropdown-item" data-value="graduate">研究課程部</div>
+                    </div>
+                </div>
+                
+                <!-- 学年選択ドロップダウン（WEEKモード用） -->
+                <div class="custom-dropdown hidden" id="week-dropdown">
+                    <div class="dropdown-toggle" id="week-dropdown-toggle">1年生</div>
+                    <div class="dropdown-menu" id="week-dropdown-menu">
+                        <div class="dropdown-item active" data-value="1">1年生</div>
+                        <div class="dropdown-item" data-value="2">2年生</div>
+                        <div class="dropdown-item" data-value="3">3年生</div>
+                        <div class="dropdown-item" data-value="4">4年生</div>
+                        <div class="dropdown-item" data-value="4m">4年助産</div>
+                        <div class="dropdown-item" data-value="m1">M1</div>
+                        <div class="dropdown-item" data-value="m2">M2</div>
+                        <div class="dropdown-item" data-value="d1">D1</div>
+                        <div class="dropdown-item" data-value="d23">D2/D3</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <!-- 時間割表示部分 -->
+        <div class="timetable-container" id="day-view">
+            <!-- 最終更新日時 -->
+            <div class="update-info">最終更新: 2025-04-14 09:16:25</div>
+            
+            <div class="timetable-wrapper">
+                <table id="timetable">
+                    <thead>
+                        <tr>
+                            <th>時限</th>
+                            <th>1年生</th>
+                            <th>2年生</th>
+                            <th>3年生</th>
+                            <th>4年生</th>
+                            <th>4年助産</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="time-col">1限</td>
+                            <td>
+                                <div class="class-cell">
+                                    <div class="class-name">基礎医学</div>
+                                    <div class="class-room">講義室1</div>
+                                </div>
+                            </td>
+                            <td></td>
+                            <td>
+                                <div class="class-cell">
+                                    <div class="class-name">看護教育論</div>
+                                    <div class="class-room">大講義室</div>
+                                </div>
+                            </td>
+                            <td></td>
+                            <td>
+                                <div class="class-cell">
+                                    <div class="class-name">助産学演習Ⅱ</div>
+                                    <div class="class-room">南小実</div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="time-col">2限</td>
+                            <td></td>
+                            <td>
+                                <div class="class-cell">
+                                    <div class="class-name">生命科学</div>
+                                    <div class="class-room">101</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="class-cell">
+                                    <div class="class-name">看護過程演習</div>
+                                    <div class="class-room">大講義室</div>
+                                </div>
+                            </td>
+                            <td></td>
+                            <td>
+                                <div class="class-cell">
+                                    <div class="class-name">助産学演習Ⅱ</div>
+                                    <div class="class-room">南小実</div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="time-col">3限</td>
+                            <td>
+                                <div class="class-cell">
+                                    <div class="class-name">文化人類学</div>
+                                    <div class="class-room">101</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="class-cell">
+                                    <div class="class-name">成人看護学概論</div>
+                                    <div class="class-room">201</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="class-cell">
+                                    <div class="class-name">老年看護援助論</div>
+                                    <div class="class-room">大講義室</div>
+                                </div>
+                            </td>
+                            <td></td>
+                            <td>
+                                <div class="class-cell">
+                                    <div class="class-name">助産診断・技術学Ⅱ</div>
+                                    <div class="class-room">304</div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="time-col">4限</td>
+                            <td>
+                                <div class="class-cell">
+                                    <div class="class-name">文化人類学</div>
+                                    <div class="class-room">101</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="class-cell">
+                                    <div class="class-name">日本の伝統芸術</div>
+                                    <div class="class-room">201</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="class-cell">
+                                    <div class="class-name">老年看護援助論</div>
+                                    <div class="class-room">大講義室</div>
+                                </div>
+                            </td>
+                            <td></td>
+                            <td>
+                                <div class="class-cell">
+                                    <div class="class-name">ウィメンズヘルス論</div>
+                                    <div class="class-room">304</div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="time-col">5限</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- 週表示 -->
+        <div class="timetable-container hidden" id="week-view">
+            <!-- 最終更新日時 -->
+            <div class="update-info">最終更新: 2025-04-14 09:16:25</div>
+            
+            <div class="timetable-wrapper">
+                <table id="week-timetable">
+                    <thead>
+                        <tr>
+                            <th>時限</th>
+                            <th>月</th>
+                            <th>火</th>
+                            <th>水</th>
+                            <th>木</th>
+                            <th>金</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="time-col">1限</td>
+                            <td>
+                                <div class="class-cell">
+                                    <div class="class-name">解剖学</div>
+                                    <div class="class-room">講義室2</div>
+                                </div>
+                            </td>
+                            <td></td>
+                            <td>
+                                <div class="class-cell">
+                                    <div class="class-name">基礎医学</div>
+                                    <div class="class-room">講義室1</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="class-cell">
+                                    <div class="class-name">英語</div>
+                                    <div class="class-room">語学室</div>
+                                </div>
+                            </td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td class="time-col">2限</td>
+                            <td></td>
+                            <td>
+                                <div class="class-cell">
+                                    <div class="class-name">化学</div>
+                                    <div class="class-room">実験室1</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="class-cell">
+                                    <div class="class-name">生理学</div>
+                                    <div class="class-room">講義室1</div>
+                                </div>
+                            </td>
+                            <td></td>
+                            <td>
+                                <div class="class-cell">
+                                    <div class="class-name">組織学</div>
+                                    <div class="class-room">実習室A</div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="time-col">3限</td>
+                            <td>
+                                <div class="class-cell">
+                                    <div class="class-name">医療倫理</div>
+                                    <div class="class-room">講義室3</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="class-cell">
+                                    <div class="class-name">微生物学</div>
+                                    <div class="class-room">講義室3</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="class-cell">
+                                    <div class="class-name">文化人類学</div>
+                                    <div class="class-room">101</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="class-cell">
+                                    <div class="class-name">病理学</div>
+                                    <div class="class-room">講義室2</div>
+                                </div>
+                            </td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td class="time-col">4限</td>
+                            <td>
+                                <div class="class-cell">
+                                    <div class="class-name">統計学</div>
+                                    <div class="class-room">情報室</div>
+                                </div>
+                            </td>
+                            <td></td>
+                            <td>
+                                <div class="class-cell">
+                                    <div class="class-name">文化人類学</div>
+                                    <div class="class-room">101</div>
+                                </div>
+                            </td>
+                            <td></td>
+                            <td>
+                                <div class="class-cell">
+                                    <div class="class-name">薬理学</div>
+                                    <div class="class-room">講義室3</div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="time-col">5限</td>
+                            <td></td>
+                            <td>
+                                <div class="class-cell">
+                                    <div class="class-name">生化学</div>
+                                    <div class="class-room">講義室1</div>
+                                </div>
+                            </td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- PC画面の広い表示時のDAYビュー -->
+        <div class="timetable-container hidden" id="wide-day-view">
+            <!-- 最終更新日時 -->
+            <div class="update-info">最終更新: 2025-04-14 09:16:25</div>
+            
+            <div class="timetable-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>時限</th>
+                            <th>1年生</th>
+                            <th>2年生</th>
+                            <th>3年生</th>
+                            <th>4年生</th>
+                            <th>4年助産</th>
+                            <th>M1</th>
+                            <th>M2</th>
+                            <th>D1</th>
+                            <th>D2/D3</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="time-col">1限</td>
+                            <td>
+                                <div class="class-cell">
+                                    <div class="class-name">基礎医学</div>
+                                    <div class="class-room">講義室1</div>
+                                </div>
+                            </td>
+                            <td><div class="empty-cell"></div></td>
+                            <td>
+                                <div class="class-cell">
+                                    <div class="class-name">看護教育論</div>
+                                    <div class="class-room">大講義室</div>
+                                </div>
+                            </td>
+                            <td><div class="empty-cell"></div></td>
+                            <td>
+                                <div class="class-cell">
+                                    <div class="class-name">助産学演習Ⅱ</div>
+                                    <div class="class-room">南小実</div>
+                                </div>
+                            </td>
+                            <td><div class="empty-cell"></div></td>
+                            <td>
+                                <div class="class-cell">
+                                    <div class="class-name">特別講義</div>
+                                    <div class="class-room">大講義室</div>
+                                </div>
+                            </td>
+                            <td><div class="empty-cell"></div></td>
+                            <td><div class="empty-cell"></div></td>
+                        </tr>
+                        <tr>
+                            <td class="time-col">2限</td>
+                            <td></td>
+                            <td>
+                                <div class="class-cell">
+                                    <div class="class-name">生命科学</div>
+                                    <div class="class-room">101</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="class-cell">
+                                    <div class="class-name">看護過程演習</div>
+                                    <div class="class-room">大講義室</div>
+                                </div>
+                            </td>
+                            <td></td>
+                            <td>
+                                <div class="class-cell">
+                                    <div class="class-name">助産学演習Ⅱ</div>
+                                    <div class="class-room">南小実</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="class-cell">
+                                    <div class="class-name">研究法</div>
+                                    <div class="class-room">演習室2</div>
+                                </div>
+                            </td>
+                            <td></td>
+                            <td>
+                                <div class="class-cell">
+                                    <div class="class-name">高度看護学</div>
+                                    <div class="class-room">大学院棟</div>
+                                </div>
+                            </td>
+                            <td></td>
+                        </tr>
+                        <tr>
+                            <td class="time-col">3限</td>
+                            <td>
+                                <div class="class-cell">
+                                    <div class="class-name">文化人類学</div>
+                                    <div class="class-room">101</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="class-cell">
+                                    <div class="class-name">成人看護学概論</div>
+                                    <div class="class-room">201</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="class-cell">
+                                    <div class="class-name">老年看護援助論</div>
+                                    <div class="class-room">大講義室</div>
+                                </div>
+                            </td>
+                            <td></td>
+                            <td>
+                                <div class="class-cell">
+                                    <div class="class-name">助産診断・技術学Ⅱ</div>
+                                    <div class="class-room">304</div>
+                                </div>
+                            </td>
+                            <td></td>
+                            <td>
+                                <div class="class-cell">
+                                    <div class="class-name">医療統計学</div>
+                                    <div class="class-room">情報処理室</div>
+                                </div>
+                            </td>
+                            <td></td>
+                            <td>
+                                <div class="class-cell">
+                                    <div class="class-name">博士論文演習</div>
+                                    <div class="class-room">セミナー室</div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="time-col">4限</td>
+                            <td>
+                                <div class="class-cell">
+                                    <div class="class-name">文化人類学</div>
+                                    <div class="class-room">101</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="class-cell">
+                                    <div class="class-name">日本の伝統芸術</div>
+                                    <div class="class-room">201</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="class-cell">
+                                    <div class="class-name">老年看護援助論</div>
+                                    <div class="class-room">大講義室</div>
+                                </div>
+                            </td>
+                            <td></td>
+                            <td>
+                                <div class="class-cell">
+                                    <div class="class-name">ウィメンズヘルス論</div>
+                                    <div class="class-room">304</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="class-cell">
+                                    <div class="class-name">英語論文講読</div>
+                                    <div class="class-room">演習室1</div>
+                                </div>
+                            </td>
+                            <td></td>
+                            <td></td>
+                            <td>
+                                <div class="class-cell">
+                                    <div class="class-name">論文指導</div>
+                                    <div class="class-room">セミナー室</div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="time-col">5限</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td>
+                                <div class="class-cell">
+                                    <div class="class-name">研究計画発表</div>
+                                    <div class="class-room">大学院棟</div>
+                                </div>
+                            </td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    $(document).ready(function() {
+        // サンプルデータ（実際の実装では、JSONファイルから読み込む）
+        const timetableData = {
+            // データを実際のJSONで置き換える
+        };
+        
+        // メニュー開閉
+        $('#menu-toggle').on('click', function() {
+            $('#sidemenu').addClass('active');
+            $('#overlay').addClass('active');
+        });
+        
+        $('#menu-close, #overlay').on('click', function() {
+            $('#sidemenu').removeClass('active');
+            $('#overlay').removeClass('active');
+        });
+        
+        // ドロップダウン開閉
+        $('.dropdown-toggle').on('click', function() {
+            const menuId = $(this).next('.dropdown-menu').attr('id');
+            $('.dropdown-menu').not('#' + menuId).removeClass('show');
+            $(this).next('.dropdown-menu').toggleClass('show');
+        });
+        
+        // ドロップダウンアイテム選択
+        $('.dropdown-item').on('click', function() {
+            const value = $(this).data('value');
+            const text = $(this).text();
+            
+            // アクティブ状態を更新
+            $(this).parent().find('.dropdown-item').removeClass('active');
+            $(this).addClass('active');
+            
+            // ドロップダウンのテキストを更新
+            $(this).parent().prev('.dropdown-toggle').text(text);
+            
+            // ドロップダウンを閉じる
+            $(this).parent().removeClass('show');
+            
+            // データ更新処理をここに追加
+            updateTimetableData(value);
+        });
+        
+        // ドロップダウン外クリックで閉じる
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest('.custom-dropdown').length) {
+                $('.dropdown-menu').removeClass('show');
+            }
+        });
+        
+        // 表示モード切替（DAY/WEEK）
+        $('.mode-option').on('click', function() {
+            const mode = $(this).data('mode');
+            
+            // アクティブ状態を更新
+            $('.mode-option').removeClass('active');
+            $(this).addClass('active');
+            
+            // 表示を切り替え
+            if (mode === 'day') {
+                // 画面幅を確認
+                if ($(window).width() >= 1200) {
+                    // 広い画面では学部と研究課程部を並べて表示
+                    $('#day-view').addClass('hidden');
+                    $('#week-view').addClass('hidden');
+                    $('#wide-day-view').removeClass('hidden');
+                } else {
+                    // 通常幅ではドロップダウンで切り替え
+                    $('#day-view').removeClass('hidden');
+                    $('#week-view').addClass('hidden');
+                    $('#wide-day-view').addClass('hidden');
+                }
+                $('#day-dropdown').removeClass('hidden');
+                $('#week-dropdown').addClass('hidden');
+            } else { // week
+                $('#day-view').addClass('hidden');
+                $('#week-view').removeClass('hidden');
+                $('#wide-day-view').addClass('hidden');
+                $('#day-dropdown').addClass('hidden');
+                $('#week-dropdown').removeClass('hidden');
+            }
+            
+            // 日付表示を更新
+            updateDateDisplay();
+        });
+        
+        // ウィンドウリサイズ時の処理
+        $(window).resize(function() {
+            // DAYモードが選択されている場合
+            if ($('.mode-option[data-mode="day"]').hasClass('active')) {
+                if ($(window).width() >= 1200) {
+                    // 広い画面では学部と研究課程部を並べて表示
+                    $('#day-view').addClass('hidden');
+                    $('#wide-day-view').removeClass('hidden');
+                } else {
+                    // 通常幅ではドロップダウンで切り替え
+                    $('#day-view').removeClass('hidden');
+                    $('#wide-day-view').addClass('hidden');
+                }
+            }
+        });
+        
+        // 前日/次日ボタン
+        let currentDate = new Date(2025, 3, 16); // 2025年4月16日
+        
+        $('#prev-date').on('click', function() {
+            const mode = $('.mode-option.active').data('mode');
+            
+            if (mode === 'day') {
+                currentDate.setDate(currentDate.getDate() - 1);
+            } else { // week
+                currentDate.setDate(currentDate.getDate() - 7);
+            }
+            
+            updateDateDisplay();
+            // データ更新処理をここに追加
+        });
+        
+        $('#next-date').on('click', function() {
+            const mode = $('.mode-option.active').data('mode');
+            
+            if (mode === 'day') {
+                currentDate.setDate(currentDate.getDate() + 1);
+            } else { // week
+                currentDate.setDate(currentDate.getDate() + 7);
+            }
+            
+            updateDateDisplay();
+            // データ更新処理をここに追加
+        });
+        
+        // 日付表示を更新する関数
+        function updateDateDisplay() {
+            const mode = $('.mode-option.active').data('mode');
+            
+            if (mode === 'day') {
+                // 1日表示の場合
+                const dayOfWeek = ['日', '月', '火', '水', '木', '金', '土'][currentDate.getDay()];
+                $('#current-date').text(
+                    `${currentDate.getFullYear()}年${currentDate.getMonth() + 1}月${currentDate.getDate()}日（${dayOfWeek}）`
+                );
+            } else {
+                // 週表示の場合
+                const weekStart = new Date(currentDate);
+                const day = weekStart.getDay();
+                weekStart.setDate(weekStart.getDate() - day + (day === 0 ? -6 : 1)); // 月曜日に調整
+                
+                const weekEnd = new Date(weekStart);
+                weekEnd.setDate(weekEnd.getDate() + 4); // 金曜日
+                
+                $('#current-date').text(
+                    `${weekStart.getFullYear()}年${weekStart.getMonth() + 1}月${weekStart.getDate()}日～${weekEnd.getMonth() + 1}月${weekEnd.getDate()}日`
+                );
+            }
+            
+            // ここで実際のデータ更新処理を行う（JSONデータの読み込みなど）
+            // updateTimetableData(currentDate, mode);
+        }
+        
+        // 時間割データを更新する関数
+        function updateTimetableData(value) {
+            // ここでJSONからデータを読み込む処理を実装
+            // 例: $.getJSON('timetable.json', function(data) { ... });
+            
+            // 現在の表示モードを取得
+            const mode = $('.mode-option.active').data('mode');
+            
+            // 表示モードに合わせてデータを更新
+            if (mode === 'day') {
+                // DAYモードの場合: 学部/研究課程部の切り替え
+                if (value === 'undergrad') {
+                    // 学部学生の時間割を表示
+                    // ここにデータ更新処理を実装
+                } else if (value === 'graduate') {
+                    // 研究課程部の時間割を表示
+                    // ここにデータ更新処理を実装
+                }
+            } else {
+                // WEEKモードの場合: 学年の切り替え
+                // ここにデータ更新処理を実装
+            }
+            
+            // 空のセルにempty-classを追加
+            $('td:not(:has(.class-cell))').each(function() {
+                if (!$(this).hasClass('time-col')) {
+                    $(this).html('<div class="empty-cell"></div>');
+                }
+            });
+        }
+        
+        // 初期表示
+        updateDateDisplay();
+        
+        // 初期画面幅をチェックして表示を調整
+        if ($(window).width() >= 1200 && $('.mode-option[data-mode="day"]').hasClass('active')) {
+            // 広い画面ではDAY表示時に学部と研究課程部を並べて表示
+            $('#day-view').addClass('hidden');
+            $('#wide-day-view').removeClass('hidden');
+        }
+        
+        // 空のセルにempty-classを追加
+        $('td:not(:has(.class-cell))').each(function() {
+            if (!$(this).hasClass('time-col')) {
+                $(this).html('<div class="empty-cell"></div>');
+            }
+        });
+        
+        // JSONデータを読み込む関数
+        function loadTimetableData() {
+            // 実際の実装では、$.getJSON()などでJSONファイルを読み込む
+            // 例: $.getJSON('timetable.json', function(data) { 
+            //   timetableData = data;
+            //   updateInitialView(); 
+            // });
+            
+            // サンプルデータを使用
+            return timetableData;
+        }
+        
+        // 画面外クリックでドロップダウンを閉じる
+        $(document).on('click', function(e) {
+            if (!$(e.target).closest('.dropdown-toggle').length && 
+                !$(e.target).closest('.dropdown-menu').length) {
+                $('.dropdown-menu').removeClass('show');
+            }
+        });
+    });
+    </script>
+</body>
+</html>
