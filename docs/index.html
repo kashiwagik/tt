@@ -163,7 +163,7 @@
             font-weight: bold;
             padding: 0.5rem 1rem;
             border-radius: 0.5rem;
-            background-color: var(--primary-lightest);
+            /* background-color: var(--primary-lightest); */
             color: var(--primary-dark);
             text-align: center;
             margin: 0 0.5rem;
@@ -226,14 +226,15 @@
         .dropdown-toggle {
             width: 100%;
             padding: 0.5rem 1rem;
-            border: 1px solid var(--primary-color);
+            /* border: 1px solid var(--primary-color); */
             border-radius: 0.25rem;
             background-color: var(--primary-lightest);
-            color: var(--primary-color);
+            color: var(--primary-dark);
             font-weight: bold;
             cursor: pointer;
             text-align: center;
             position: relative;
+            font-size: 1.25rem;
         }
 
         .dropdown-toggle::after {
@@ -346,7 +347,7 @@
         }
 
         .class-cell {
-            padding: 0.25rem;
+            padding: 0.1rem;
             height: 100%; /* Ensure cell content takes full height */
             display: flex;
             flex-direction: column;
@@ -359,17 +360,21 @@
 
         .class-td {
             vertical-align: top;
+            margin: 0.1rem;
+            padding: 0.2rem;
         }
         
         .class-name {
             /* font-weight: bold; */
             font-size: 0.875rem;
+            line-height: 1.3;
         }
 
         .class-room {
             font-size: 0.75rem;
             color: var(--text-light);
             margin-top: 0.25rem;
+            line-height: 1.2;
         }
 
         .class-comment { /* Added for potential future use */
@@ -416,15 +421,11 @@
         /* レスポンシブ対応 */
         @media (max-width: 768px) {
             html  {
-                font-size: 70%;
+                font-size: 80%;
             }
 
             th, td {
                 min-width: 80px; /* Adjust min-width for smaller screens */
-            }
-
-            th {
-                font-size: 0.75rem;
             }
 
             .time-col {
@@ -442,7 +443,7 @@
             }
 
             .date-display {
-                padding: 0.25rem 0.5rem;
+                padding: 0.5rem 0.5rem;
             }
 
             .date-nav button {
@@ -498,17 +499,6 @@
 
     <div class="container">
         <header>
-            <!-- 日付セレクター（中央配置） -->
-            <div class="date-selector">
-                <div class="date-nav">
-                    <button id="prev-date"><i class="fas fa-chevron-left"></i></button>
-                </div>
-                <div class="date-display" id="current-date">Loading...</div>
-                <div class="date-nav">
-                    <button id="next-date"><i class="fas fa-chevron-right"></i></button>
-                </div>
-            </div>
-
             <!-- 表示切替コントロール -->
             <div class="view-controls">
                 <!-- DAY/WEEK切替 -->
@@ -526,7 +516,8 @@
                     </div>
                 </div>
                 
-                
+
+
                 <!-- 学年選択ドロップダウン（WEEKモード用） -->
                 <div class="custom-dropdown hidden" id="week-dropdown">
                     <div class="dropdown-toggle" id="week-dropdown-toggle">学年選択</div>
@@ -551,6 +542,18 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- 日付セレクター（中央配置） -->
+            <div class="date-selector">
+                <div class="date-nav">
+                    <button id="prev-date"><i class="fas fa-chevron-left"></i></button>
+                </div>
+                <div class="date-display" id="current-date">Loading...</div>
+                <div class="date-nav">
+                    <button id="next-date"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+
         </header>
 
         <!-- 時間割表示部分 -->
@@ -586,7 +589,7 @@
 
         // --- Initialization ---
         function initialize() {
-            // parseUrlParams(); // We'll adjust this later if needed for target param
+            parseUrlParams(); // URLパラメータを解析して初期状態を設定
             loadTimetableData().then(() => {
                 setupEventListeners();
                 updateGradeDropdown(); // Populate week dropdown with all grades
@@ -597,10 +600,59 @@
                 $('#timetable > tbody').html('<tr><td colspan="6">時間割データの読み込みに失敗しました。</td></tr>');
                 $('#current-date').text('エラー');
             });
-        } // Add missing closing brace for initialize function
+        }
 
-        // TODO: Enhance parseUrlParams to handle 'target' if needed
-        // function parseUrlParams() { ... }
+        // URLパラメータを解析して初期状態を設定する関数
+        function parseUrlParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            // 日付パラメータの処理
+            if (urlParams.has('day')) {
+                const dayParam = urlParams.get('day');
+                // YYYY-MM-DD または YYYYMMDD 形式の日付を解析
+                const dateMatch = dayParam.match(/^(\d{4})[-]?(\d{2})[-]?(\d{2})$/);
+                if (dateMatch) {
+                    const year = parseInt(dateMatch[1]);
+                    const month = parseInt(dateMatch[2]) - 1; // JavaScriptの月は0-11
+                    const day = parseInt(dateMatch[3]);
+                    const newDate = new Date(year, month, day);
+                    // 有効な日付かチェック
+                    if (!isNaN(newDate.getTime())) {
+                        currentDate = newDate;
+                    }
+                }
+            }
+            
+            // 表示モードパラメータの処理
+            if (urlParams.has('type')) {
+                const typeParam = urlParams.get('type').toLowerCase();
+                if (typeParam === 'day' || typeParam === 'week') {
+                    currentMode = typeParam;
+                }
+            }
+            
+            // 学年パラメータの処理（週表示用）
+            if (urlParams.has('grade')) {
+                const gradeParam = urlParams.get('grade');
+                if (allGrades.includes(gradeParam)) {
+                    currentGrade = gradeParam;
+                }
+            }
+            
+            // 表示対象パラメータの処理（日表示用）
+            if (urlParams.has('target')) {
+                const targetParam = urlParams.get('target').toLowerCase();
+                if (targetParam === 'undergrad' || targetParam === 'graduate') {
+                    currentTarget = targetParam;
+                    // 表示対象に応じてactiveGradesを更新
+                    activeGrades = (currentTarget === 'graduate') ? graduateGrades : undergradGrades;
+                    // ドロップダウンの表示も更新
+                    $('#day-dropdown-toggle').text(targetParam === 'undergrad' ? '学部' : '研究課程部');
+                    $('#day-dropdown-menu .dropdown-item').removeClass('active');
+                    $(`#day-dropdown-menu .dropdown-item[data-value="${targetParam}"]`).addClass('active');
+                }
+            }
+        }
 
         function loadTimetableData() {
             return $.getJSON('schedule.json')
@@ -824,7 +876,8 @@
             // Build header row based on the current target (undergrad/graduate)
             let headerHtml = '<tr><th class="time-col">時限</th>';
             activeGrades.forEach(grade => { // Use activeGrades here
-                headerHtml += `<th>${grade}</th>`;
+                const dayLinkDate = formatDate(currentDate);
+                headerHtml += `<th><a href="?day=${dayLinkDate}&type=week&grade=${grade}">${grade}</a></th>`;
             });
             headerHtml += '</tr>';
             $thead.html(headerHtml);
@@ -878,7 +931,7 @@
             dateObjs.forEach(dateObj => {
                 const dayLinkDate = formatDate(dateObj);
                 const weekday = weekdays[dateObj.getDay()];
-                headerHtml += `<th><span class="date-header">${dateObj.getMonth() + 1}月${dateObj.getDate()}日<br/>${weekday}</span></th>`;
+                headerHtml += `<th><a href="?day=${dayLinkDate}&type=day&target=${currentTarget}"><span class="date-header">${dateObj.getMonth() + 1}月${dateObj.getDate()}日<br/>${weekday}</span></a></th>`;
             });
             headerHtml += '</tr>';
             $thead.html(headerHtml);
@@ -916,12 +969,15 @@
         function updateUrl() {
             const params = new URLSearchParams();
             params.set('day', formatDate(currentDate));
+            
             if (currentMode === 'week' && currentGrade) {
                 params.set('type', 'week');
                 params.set('grade', currentGrade);
             } else {
-                 params.set('type', 'day'); // Default to day if not week
+                params.set('type', 'day'); // Default to day if not week
+                params.set('target', currentTarget); // 日表示の場合は表示対象も含める
             }
+            
             // Use replaceState to avoid cluttering browser history
             history.replaceState(null, '', `?${params.toString()}`);
         }
