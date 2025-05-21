@@ -3,7 +3,6 @@ import os
 import pandas as pd
 import json
 from collections import defaultdict
-import sqlite3
 
 # 以下のエラー抑制のための設定
 # FutureWarning: Downcasting object dtype arrays on .fillna, .ffill, .bfill is deprecated and will change in a future version. 
@@ -38,55 +37,6 @@ def get_schedule(file_path, sheet_name, grade):
             rooms[room] += 1
             timetable.append(course)
     return timetable, courses, rooms
-
-
-def save_to_sqlite(timetable, db_path='schedule.db'):
-    """
-    時間割データをSQLiteデータベースに保存する関数
-    
-    Args:
-        timetable (list): 時間割データのリスト
-        db_path (str): SQLiteデータベースのパス
-    """
-    # SQLiteデータベースに接続
-    conn = sqlite3.connect(db_path)
-    cursor = conn.cursor()
-
-    # テーブルを作成（存在しない場合）
-    cursor.execute('''
-    CREATE TABLE IF NOT EXISTS schedule (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        grade TEXT,
-        date TEXT,
-        period INTEGER,
-        courses TEXT,
-        room TEXT,
-        comment TEXT
-    )
-    ''')
-
-    # データを挿入する前に既存のデータを削除
-    cursor.execute('DELETE FROM schedule')
-
-    # データをSQLiteに挿入
-    for course in timetable:
-        cursor.execute('''
-        INSERT INTO schedule (grade, date, period, courses, room, comment)
-        VALUES (?, ?, ?, ?, ?, ?)
-        ''', (
-            course['grade'],
-            course['date'],
-            course['period'],
-            course['courses'],
-            course['room'],
-            course['comment']
-        ))
-
-    # 変更をコミットして接続を閉じる
-    conn.commit()
-    conn.close()
-    
-    print(f'{db_path}に保存しました。')
 
 
 def save_to_json(timetable, json_path='schedule.json'):
@@ -157,8 +107,6 @@ def main(file_path, sheet_names, json_path, info_json_path):
     # 4年生の時間割を4年生助産に追加
     all_timetable = add_schedule_to_josan(all_timetable)
 
-    # SQLite
-    # save_to_sqlite(timetable)
     # JSONに保存
     save_to_json(all_timetable, json_path)
 
