@@ -112,7 +112,7 @@ def main(file_path, sheet_names, json_path, info_json_path):
 
 
 if __name__ == "__main__":
-    excel_path = '【2025・04～09月 前期】全学年時間割.xlsx'
+    excel_path = 'schedule.xlsx'
     sheet_names = {
         '2025年度(1年前期)': '1年生',
         '2025年度(2年前期)': '2年生',
