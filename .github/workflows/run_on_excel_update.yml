@@ -3,7 +3,7 @@ name: Run Python Script on Excel Update
 on:
   push:
     paths:
-      - '【2025・04～09月 前期】全学年時間割.xlsx'
+      - 'schedule.xlsx'
 
 permissions:
   contents: write
