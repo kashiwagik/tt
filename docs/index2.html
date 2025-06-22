@@ -616,8 +616,13 @@
                     params.set('target', this.target);
                 }
                 
-                // replaceStateを使用して履歴を汚さない
-                history.replaceState(null, '', `?${params.toString()}`);
+                const newUrl = `?${params.toString()}`;
+                const currentUrl = window.location.search;
+                
+                // URLが変更された場合のみ更新
+                if (newUrl !== currentUrl) {
+                    history.pushState(null, '', newUrl);
+                }
             }
 
             // アクティブな学年リストを取得
