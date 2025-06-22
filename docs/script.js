@@ -23,6 +23,18 @@ $(document).ready(function() {
         loadSettingsFromUrl() {
             const urlParams = new URLSearchParams(window.location.search);
             
+            // sessionStorageから日付情報を読み込み（リンククリック時）
+            const storedDate = sessionStorage.getItem('timetable_date');
+            if (storedDate) {
+                console.log("Loading date from sessionStorage:", storedDate);
+                const newDate = new Date(storedDate);
+                if (!isNaN(newDate.getTime())) {
+                    this.date = newDate;
+                }
+                // 使用後は削除
+                sessionStorage.removeItem('timetable_date');
+            }
+            
             // 日付パラメータがある場合のみ読み込み（初回アクセス時など）
             if (urlParams.has('day')) {
                 const dayParam = urlParams.get('day');
@@ -250,7 +262,8 @@ $(document).ready(function() {
             let headerHtml = '<tr><th class="time-col">時限</th>';
             dateObjs.forEach(dateObj => {
                 const weekday = this.state.weekdays[dateObj.getDay()];
-                headerHtml += `<th><a href="?type=day&target=${this.state.target}"><span class="date-header">${dateObj.getMonth() + 1}月${dateObj.getDate()}日<br/>${weekday}</span></a></th>`;
+                const dateIso = dateObj.toISOString();
+                headerHtml += `<th><a href="?type=day&target=${this.state.target}" data-date="${dateIso}"><span class="date-header">${dateObj.getMonth() + 1}月${dateObj.getDate()}日<br/>${weekday}</span></a></th>`;
             });
             headerHtml += '</tr>';
             $thead.html(headerHtml);
@@ -317,6 +330,22 @@ $(document).ready(function() {
             $(document).on('click', function(e) {
                 if (!$(e.target).closest('.custom-dropdown').length) {
                     $('.dropdown-menu').removeClass('show');
+                }
+            });
+
+            // テーブルヘッダーのリンククリック時に日付情報を保存
+            $(document).on('click', 'th a', (e) => {
+                const $link = $(e.currentTarget);
+                const linkDate = $link.data('date');
+                
+                if (linkDate) {
+                    // リンクに特定の日付が設定されている場合（週表示の日付リンク）
+                    console.log("Saving specific date from link:", linkDate);
+                    sessionStorage.setItem('timetable_date', linkDate);
+                } else {
+                    // 学年リンクなど、現在の日付を保持する場合
+                    console.log("Saving current date:", this.state.date.toISOString());
+                    sessionStorage.setItem('timetable_date', this.state.date.toISOString());
                 }
             });
         }
