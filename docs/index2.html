@@ -153,7 +153,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0.5rem 0.5em 0.5em 0.5em;
+            margin: 0.5rem auto;
             width: 100%;
             max-width: 500px; /* 幅を広げる */
         }
@@ -605,7 +605,8 @@
             // 設定のみをURLに反映（日付は除外）
             syncSettingsToUrl() {
                 if (this.isUpdating) return; // 更新中は処理しない
-                
+                console.log("syncSettingsToUrl");
+
                 const params = new URLSearchParams();
                 
                 if (this.mode === 'week' && this.grade) {
@@ -621,6 +622,7 @@
                 
                 // URLが変更された場合のみ更新
                 if (newUrl !== currentUrl) {
+                    console.log("Updating URL:", newUrl);
                     history.pushState(null, '', newUrl);
                 }
             }
@@ -655,18 +657,20 @@
             // 全体のビューを更新（設定変更時のみURL同期）
             update(syncUrl = false) {
                 this.state.isUpdating = true; // 更新フラグを設定
-                
+                console.log("Updating view with syncUrl:", syncUrl);
+
                 this.updateModeSelector();
                 this.updateDropdowns();
                 this.updateDateDisplay();
                 this.updateTimetable();
+                
+                this.state.isUpdating = false; // 更新フラグをクリア
                 
                 // 設定変更時のみURL同期
                 if (syncUrl) {
                     this.state.syncSettingsToUrl();
                 }
                 
-                this.state.isUpdating = false; // 更新フラグをクリア
             }
 
             // 日付のみ更新（URL同期なし）
