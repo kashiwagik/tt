@@ -144,7 +144,7 @@ h1 { /* This is used for the date display in the original index.html logic, but 
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0.5rem 0.5em 0.5em 0.5em;
+    margin: 0.5rem auto;
     width: 100%;
     max-width: 500px; /* 幅を広げる */
 }

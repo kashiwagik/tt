@@ -299,6 +299,9 @@ $(document).ready(function() {
             $('#prev-date').on('click', () => this.navigateDate(-1));
             $('#next-date').on('click', () => this.navigateDate(1));
 
+            // スワイプ操作の設定
+            this.setupSwipeGestures();
+
             // モード切替（URL更新あり）
             $('.mode-option').on('click', (e) => {
                 const mode = $(e.target).data('mode');
@@ -366,6 +369,66 @@ $(document).ready(function() {
                 this.state.grade = this.state.allGrades[0];
             }
             this.view.update(true); // URL同期あり
+        }
+
+        // スワイプジェスチャーの設定
+        setupSwipeGestures() {
+            let startX = 0;
+            let startY = 0;
+            let endX = 0;
+            let endY = 0;
+            const minSwipeDistance = 50; // 最小スワイプ距離（ピクセル）
+            const maxVerticalDistance = 100; // 垂直方向の最大許容距離
+
+            // タッチ開始
+            $(document).on('touchstart', (e) => {
+                const touch = e.originalEvent.touches[0];
+                startX = touch.clientX;
+                startY = touch.clientY;
+            });
+
+            // タッチ終了
+            $(document).on('touchend', (e) => {
+                const touch = e.originalEvent.changedTouches[0];
+                endX = touch.clientX;
+                endY = touch.clientY;
+
+                const deltaX = endX - startX;
+                const deltaY = Math.abs(endY - startY);
+
+                // 垂直方向の移動が大きすぎる場合は無視（スクロールと判定）
+                if (deltaY > maxVerticalDistance) {
+                    return;
+                }
+
+                // 水平方向のスワイプ距離をチェック
+                if (Math.abs(deltaX) > minSwipeDistance) {
+                    if (deltaX > 0) {
+                        // 右スワイプ → 前の日付（prev-date）
+                        console.log("Right swipe detected - navigating to previous date");
+                        this.navigateDate(-1);
+                    } else {
+                        // 左スワイプ → 次の日付（next-date）
+                        console.log("Left swipe detected - navigating to next date");
+                        this.navigateDate(1);
+                    }
+                }
+            });
+
+            // タッチ移動中のデフォルト動作を防止（必要に応じて）
+            $(document).on('touchmove', (e) => {
+                // 水平スワイプの場合のみデフォルト動作を防止
+                const touch = e.originalEvent.touches[0];
+                const currentX = touch.clientX;
+                const currentY = touch.clientY;
+                const deltaX = Math.abs(currentX - startX);
+                const deltaY = Math.abs(currentY - startY);
+
+                // 水平方向の移動が垂直方向より大きい場合
+                if (deltaX > deltaY && deltaX > 10) {
+                    e.preventDefault();
+                }
+            });
         }
     }
 
