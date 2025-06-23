@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
 import os
 import pandas as pd
 import json
@@ -84,7 +84,10 @@ def add_schedule_to_josan(timetable):
 def make_info_json(file_path, info_json_path):
     # ファイルの更新時刻を取得
     file_stat = os.stat(file_path)
-    modified_time = datetime.fromtimestamp(file_stat.st_mtime).strftime('%Y-%m-%d %H:%M:%S')
+    # 日本時間（UTC+9）のタイムゾーンを定義
+    jst = timezone(timedelta(hours=9))
+    # UTCタイムスタンプを日本時間に変換
+    modified_time = datetime.fromtimestamp(file_stat.st_mtime, tz=jst).strftime('%Y-%m-%d %H:%M:%S')
 
     # 更新時刻をinfo.jsonに書き込む
     info_data = {"file_path": file_path, "last_modified": modified_time}
@@ -129,4 +132,3 @@ if __name__ == "__main__":
     info_json_path = 'docs/info.json'
 
     main(excel_path, sheet_names, json_path, info_json_path)
-
