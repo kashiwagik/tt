@@ -14506,6 +14506,22 @@
   {
     "grade": "M1",
     "date": "2025-06-06",
+    "period": 1,
+    "courses": "政策医療看護学特論Ⅰ",
+    "room": "臨床講義室1",
+    "comment": ""
+  },
+  {
+    "grade": "M1",
+    "date": "2025-06-06",
+    "period": 2,
+    "courses": "政策医療看護学特論Ⅰ",
+    "room": "臨床講義室1",
+    "comment": ""
+  },
+  {
+    "grade": "M1",
+    "date": "2025-06-06",
     "period": 3,
     "courses": "看護研究法",
     "room": "臨床講義室1",
