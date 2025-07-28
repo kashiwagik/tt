@@ -7963,7 +7963,7 @@
     "grade": "3年生",
     "date": "2025-07-29",
     "period": 2,
-    "courses": "英語V　追再試",
+    "courses": "英語Ⅴ　追再試",
     "room": 302,
     "comment": ""
   },
@@ -8061,6 +8061,14 @@
     "period": 3,
     "courses": "国試対策基礎学力テスト　追再試",
     "room": 302,
+    "comment": ""
+  },
+  {
+    "grade": "3年生",
+    "date": "2025-08-01",
+    "period": 4,
+    "courses": "CBT事前確認\n(7/28欠席者)",
+    "room": 301,
     "comment": ""
   },
   {
