@@ -5513,6 +5513,14 @@
   },
   {
     "grade": "2年生",
+    "date": "2025-08-06",
+    "period": 4,
+    "courses": "遺伝と健康 再試験",
+    "room": 203,
+    "comment": ""
+  },
+  {
+    "grade": "2年生",
     "date": "2025-08-07",
     "period": 0,
     "courses": "",
