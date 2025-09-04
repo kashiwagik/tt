@@ -482,7 +482,6 @@ $(document).ready(function () {
             }
         }
     }
-}
 
     // --- アプリケーション初期化 ---
     async function initializeApp() {
