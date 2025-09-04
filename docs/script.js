@@ -452,11 +452,11 @@ $(document).ready(function() {
 
         async loadInfoData() {
             try {
-                const infoSprintData = await $.getJSON('info.json');
-                const infoFallData = await $.getJSON('info.json');
+                const infoSprintData = await $.getJSON('info_spring.json');
+                const infoFallData = await $.getJSON('info_fall.json');
                 const last_modified_s = infoSprintData.last_modified || null;
                 const last_modified_f = infoFallData.last_modified || null;
-                const last_modified = max(last_modified_s, last_modified_f);
+                const last_modified = Math.max(last_modified_s, last_modified_f);
                 let infoData = { last_modified: last_modified };
                 console.log("Info data loaded successfully:", infoData);
                 
