@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(document).ready(function () {
     // --- アプリケーション状態管理クラス ---
     class TimetableState {
         constructor() {
@@ -8,13 +8,13 @@ $(document).ready(function() {
             this.target = 'undergrad'; // 'undergrad' or 'graduate'
             this.scheduleData = [];
             this.infoData = null;
-            
+
             // 定数
             this.weekdays = ['日', '月', '火', '水', '木', '金', '土'];
             this.undergradGrades = ["1年生", "2年生", "3年生", "4年生", "4年助産"];
             this.graduateGrades = ["M1", "M2", "D1", "D2/3"];
             this.allGrades = this.undergradGrades.concat(this.graduateGrades);
-            
+
             // 更新フラグ（無限ループ防止）
             this.isUpdating = false;
         }
@@ -22,7 +22,7 @@ $(document).ready(function() {
         // URLパラメータから設定のみを読み込み（日付は除外）
         loadSettingsFromUrl() {
             const urlParams = new URLSearchParams(window.location.search);
-            
+
             // sessionStorageから日付情報を読み込み（リンククリック時）
             const storedDate = sessionStorage.getItem('timetable_date');
             if (storedDate) {
@@ -34,7 +34,7 @@ $(document).ready(function() {
                 // 使用後は削除
                 sessionStorage.removeItem('timetable_date');
             }
-            
+
             // 日付パラメータがある場合のみ読み込み（初回アクセス時など）
             if (urlParams.has('day')) {
                 const dayParam = urlParams.get('day');
@@ -49,7 +49,7 @@ $(document).ready(function() {
                     }
                 }
             }
-            
+
             // 表示モードパラメータの処理
             if (urlParams.has('type')) {
                 const typeParam = urlParams.get('type').toLowerCase();
@@ -57,7 +57,7 @@ $(document).ready(function() {
                     this.mode = typeParam;
                 }
             }
-            
+
             // 学年パラメータの処理（週表示用）
             if (urlParams.has('grade')) {
                 const gradeParam = urlParams.get('grade');
@@ -65,7 +65,7 @@ $(document).ready(function() {
                     this.grade = gradeParam;
                 }
             }
-            
+
             // 表示対象パラメータの処理（日表示用）
             if (urlParams.has('target')) {
                 const targetParam = urlParams.get('target').toLowerCase();
@@ -78,9 +78,9 @@ $(document).ready(function() {
         // 設定のみをURLに反映（日付は除外）
         syncSettingsToUrl() {
             if (this.isUpdating) return; // 更新中は処理しない
-            
+
             const params = new URLSearchParams();
-            
+
             if (this.mode === 'week' && this.grade) {
                 params.set('type', 'week');
                 params.set('grade', this.grade);
@@ -88,10 +88,10 @@ $(document).ready(function() {
                 params.set('type', 'day');
                 params.set('target', this.target);
             }
-            
+
             const newUrl = `?${params.toString()}`;
             const currentUrl = window.location.search;
-            
+
             // URLが変更された場合のみ更新
             if (newUrl !== currentUrl) {
                 history.pushState(null, '', newUrl);
@@ -128,19 +128,19 @@ $(document).ready(function() {
         // 全体のビューを更新（設定変更時のみURL同期）
         update(syncUrl = false) {
             this.state.isUpdating = true; // 更新フラグを設定
-            
+
             this.updateModeSelector();
             this.updateDropdowns();
             this.updateDateDisplay();
             this.updateTimetable();
-            
+
             this.state.isUpdating = false; // 更新フラグをクリア
 
             // 設定変更時のみURL同期
             if (syncUrl) {
                 this.state.syncSettingsToUrl();
             }
-            
+
         }
 
         // 日付のみ更新（URL同期なし）
@@ -159,7 +159,7 @@ $(document).ready(function() {
             } else {
                 $('#week-dropdown').removeClass('hidden');
                 $('#day-dropdown').addClass('hidden');
-                
+
                 // 週表示で学年が未選択の場合はデフォルトを設定
                 if (!this.state.grade || !this.state.allGrades.includes(this.state.grade)) {
                     this.state.grade = this.state.allGrades[0];
@@ -218,7 +218,7 @@ $(document).ready(function() {
 
         displayDaySchedule($thead, $tbody) {
             const activeGrades = this.state.getActiveGrades();
-            
+
             // ヘッダー行の構築（リンクは設定変更のみ）
             let headerHtml = '<tr><th class="time-col">時限</th>';
             activeGrades.forEach(grade => {
@@ -232,7 +232,7 @@ $(document).ready(function() {
             for (let period = 1; period <= 5; period++) {
                 let rowHtml = `<tr><td class="time-col">${period}限</td>`;
                 activeGrades.forEach(grade => {
-                    const entry = this.state.scheduleData.find(e => 
+                    const entry = this.state.scheduleData.find(e =>
                         e.date === dateStr && e.grade === grade && e.period === period
                     );
                     if (entry && entry.courses) {
@@ -250,7 +250,7 @@ $(document).ready(function() {
             const monday = this.state.getMondayOfWeek(new Date(this.state.date));
             const dates = [];
             const dateObjs = [];
-            
+
             for (let i = 0; i < 5; i++) {
                 const date = new Date(monday);
                 date.setDate(monday.getDate() + i);
@@ -272,7 +272,7 @@ $(document).ready(function() {
             for (let period = 1; period <= 5; period++) {
                 let rowHtml = `<tr><td class="time-col">${period}限</td>`;
                 dates.forEach(dateStr => {
-                    const entry = this.state.scheduleData.find(e => 
+                    const entry = this.state.scheduleData.find(e =>
                         e.date === dateStr && e.grade === this.state.grade && e.period === period
                     );
                     if (entry && entry.courses) {
@@ -309,7 +309,7 @@ $(document).ready(function() {
             });
 
             // ドロップダウン表示切替
-            $('.dropdown-toggle').on('click', function() {
+            $('.dropdown-toggle').on('click', function () {
                 const menu = $(this).next('.dropdown-menu');
                 $('.dropdown-menu').not(menu).removeClass('show');
                 menu.toggleClass('show');
@@ -330,7 +330,7 @@ $(document).ready(function() {
             });
 
             // ドロップダウン外クリックで閉じる
-            $(document).on('click', function(e) {
+            $(document).on('click', function (e) {
                 if (!$(e.target).closest('.custom-dropdown').length) {
                     $('.dropdown-menu').removeClass('show');
                 }
@@ -340,7 +340,7 @@ $(document).ready(function() {
             $(document).on('click', 'th a', (e) => {
                 const $link = $(e.currentTarget);
                 const linkDate = $link.data('date');
-                
+
                 if (linkDate) {
                     // リンクに特定の日付が設定されている場合（週表示の日付リンク）
                     console.log("Saving specific date from link:", linkDate);
@@ -363,7 +363,7 @@ $(document).ready(function() {
         // モード切替（URL更新あり）
         switchMode(mode) {
             if (this.state.mode === mode) return;
-            
+
             this.state.mode = mode;
             if (mode === 'week' && (!this.state.grade || !this.state.allGrades.includes(this.state.grade))) {
                 this.state.grade = this.state.allGrades[0];
@@ -454,23 +454,35 @@ $(document).ready(function() {
             try {
                 const infoSprintData = await $.getJSON('info_spring.json');
                 const infoFallData = await $.getJSON('info_fall.json');
-                const last_modified_s = infoSprintData.last_modified || null;
-                const last_modified_f = infoFallData.last_modified || null;
-                const last_modified = Math.max(last_modified_s, last_modified_f);
-                let infoData = { last_modified: last_modified };
+
+                const date_s = new Date(infoSprintData.last_modified);
+                const date_f = new Date(infoFallData.last_modified);
+
+                // 有効な日付のみを取り出す
+                const timestamps = [];
+                if (!isNaN(date_s.getTime())) timestamps.push(date_s.getTime());
+                if (!isNaN(date_f.getTime())) timestamps.push(date_f.getTime());
+
+                const last_modified_ts = timestamps.length > 0 ? Math.max(...timestamps) : null;
+                const last_modified = last_modified_ts ? new Date(last_modified_ts) : null;
+
+                let infoData = { last_modified };
                 console.log("Info data loaded successfully:", infoData);
-                
+
                 this.state.infoData = infoData;
-                if (infoData && infoData.last_modified) {
-                    $('#last-modified').text('最終更新: ' + infoData.last_modified);
+
+                if (infoData.last_modified) {
+                    $('#last-modified').text('最終更新: ' + infoData.last_modified.toLocaleString());
                 } else {
                     $('#last-modified').text('最終更新: 不明');
                 }
             } catch (error) {
+                console.error("Error loading info data:", error);
                 $('#last-modified').text('最終更新: 取得失敗');
             }
         }
     }
+}
 
     // --- アプリケーション初期化 ---
     async function initializeApp() {
@@ -482,17 +494,17 @@ $(document).ready(function() {
         try {
             // URLパラメータから設定を読み込み（日付は初回のみ）
             state.loadSettingsFromUrl();
-            
+
             // データを読み込み
             await dataManager.loadScheduleData();
             await dataManager.loadInfoData();
-            
+
             // イベントリスナーを設定
             controller.setupEventListeners();
-            
+
             // 初期表示を更新（URL同期あり）
             view.update(true);
-            
+
         } catch (error) {
             console.error("Error initializing app:", error);
             $('#timetable > tbody').html('<tr><td colspan="6">時間割データの読み込みに失敗しました。</td></tr>');
