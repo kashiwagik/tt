@@ -3,6 +3,10 @@ from azure.identity import ClientSecretCredential
 import os
 import urllib.parse
 
+S_EXCEL_PATH = "140.スケジュール・時間割/2025(R7)年度 時間割/【2025・04～09月 前期】全学年時間割.xlsx"
+F_EXCEL_PATH = "140.スケジュール・時間割/2025(R7)年度 時間割/【2025・10～03月 前期】全学年時間割.xlsx"
+
+
 CLIENT_ID = os.getenv("CLIENT_ID")
 CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 TENANT_ID = os.getenv("TENANT_ID")
@@ -121,6 +125,12 @@ def download_excel_from_sharepoint_url(hostname, site_path, file_path, output_fi
 
 
 if __name__ == "__main__":
-    file_path = "140.スケジュール・時間割/2025(R7)年度 時間割/【2025・04～09月 前期】全学年時間割.xlsx"
-    
-    download_excel_from_sharepoint_url(HOSTNAME, SITE_PATH, file_path, "schedule.xlsx")
+    # 前期 R7.09.04 Add by SUGIE
+    download_excel_from_sharepoint_url(
+        HOSTNAME, SITE_PATH, S_EXCEL_PATH , "schedule_spring.xlsx"
+    )
+
+    # 後期 R7.09.04 Add by SUGIE
+    download_excel_from_sharepoint_url(
+        HOSTNAME, SITE_PATH, F_EXCEL_PATH , "schedule_fall.xlsx"
+    )

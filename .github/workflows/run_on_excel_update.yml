@@ -3,8 +3,8 @@ name: Run Python Script on Excel Update
 on:
   push:
     paths:
-      - 'schedule.xlsx'
-
+      - 'schedule_spring.xlsx'
+      - 'schedule_fall.xlsx'
 permissions:
   contents: write
 
