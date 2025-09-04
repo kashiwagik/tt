@@ -4,7 +4,8 @@ import os
 import urllib.parse
 
 S_EXCEL_PATH = "140.スケジュール・時間割/2025(R7)年度 時間割/【2025・04～09月 前期】全学年時間割.xlsx"
-F_EXCEL_PATH = "140.スケジュール・時間割/2025(R7)年度 時間割/【2025・10～03月 前期】全学年時間割.xlsx"
+F_EXCEL_PATH = "140.スケジュール・時間割/2025(R7)年度 時間割/【2025・10～03月 後期】全学年時間割.xlsx"
+
 
 
 CLIENT_ID = os.getenv("CLIENT_ID")
@@ -52,12 +53,12 @@ def make_graph_api_request(token, base_url, path_params=None, operation_name="AP
     
     try:
         response = requests.get(url, headers=headers)
-        print(f"{operation_name}結果: {response.status_code}")
+        print(f"api:{operation_name}結果: {response.status_code}")
         
         if response.status_code == 200:
             return response
         else:
-            print(f"✗ {operation_name}失敗: {response.text[:200]}")
+            print(f"api:✗ {operation_name}失敗: {response.text[:200]}")
             return None
             
     except Exception as e:
