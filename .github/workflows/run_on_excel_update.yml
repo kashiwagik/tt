@@ -5,6 +5,13 @@ on:
     paths:
       - 'schedule_spring.xlsx'
       - 'schedule_fall.xlsx'
+  workflow_run:
+    workflows: ["Download and Commit SharePoint Excel"] 
+    types:
+      - completed
+    branches:
+      - main
+
 permissions:
   contents: write
 

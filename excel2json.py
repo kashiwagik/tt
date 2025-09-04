@@ -1,4 +1,3 @@
-
 from datetime import datetime, timezone, timedelta
 import os
 import pandas as pd
@@ -72,8 +71,12 @@ def add_schedule_to_josan(timetable):
 
 def make_info_json(file_path, info_json_path):
     file_stat = os.stat(file_path)
+    # 日本時間（UTC+9）のタイムゾーンを定義
     jst = timezone(timedelta(hours=9))
+    # UTCタイムスタンプを日本時間に変換
     modified_time = datetime.fromtimestamp(file_stat.st_mtime, tz=jst).strftime('%Y-%m-%d %H:%M:%S')
+
+    # 更新時刻をinfo.jsonに書き込む
     info_data = {"file_path": file_path, "last_modified": modified_time}
     with open(info_json_path, 'w', encoding='utf-8') as f:
         json.dump(info_data, f, ensure_ascii=False, indent=2)
