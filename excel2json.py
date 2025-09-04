@@ -108,6 +108,7 @@ if __name__ == "__main__":
         all_timetable.extend(timetable)
 
     for sheet_name, grade_name in sheet_names.items():
+        sheet_name = sheet_name.replace('前期', '後期')
         timetable, _, _ = get_schedule(f_excel_path, sheet_name, grade_name)
         all_timetable.extend(timetable)
 
