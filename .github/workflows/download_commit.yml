@@ -2,7 +2,8 @@ name: Download and Commit SharePoint Excel
 
 on:
   schedule:
-    - cron: '0 * * * *'  # 毎時0分に実行（UTC）
+    - cron: '0 21-23 * * *'  # JST 6〜8時（UTC 21〜23時）
+    - cron: '0 0-12 * * *'   # JST 9〜21時（UTC 0〜12時）
   workflow_dispatch:      # 手動実行も可能
 
 jobs:
