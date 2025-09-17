@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
 </head>
+
 <body>
     <!-- トップバー -->
     <div class="topbar">
@@ -17,15 +19,6 @@
         <div class="topbar-title">時間割</div>
     </div>
 
-    <!-- サイドメニュー -->
-    <div class="sidemenu" id="sidemenu">
-        <button class="sidemenu-close" id="menu-close">
-            <i class="fas fa-times"></i>
-        </button>
-    </div>
-
-    <!-- オーバーレイ -->
-    <div class="overlay" id="overlay"></div>
 
     <div class="container">
         <header>
@@ -62,7 +55,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <!-- 日付セレクター（中央配置） -->
             <div class="date-selector">
                 <div class="date-nav">
@@ -90,8 +83,14 @@
                 </table>
             </div>
         </div>
+        <footer>
+            <div class="footer-content">
+                <a href="update.html">アプリ更新履歴</a>
+            </div>
+        </footer>
     </div>
 
     <script src="script.js"></script>
 </body>
+
 </html>
