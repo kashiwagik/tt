@@ -33778,14 +33778,6 @@
   {
     "grade": "3年生",
     "date": "2026-02-24",
-    "period": 0,
-    "courses": "",
-    "room": "",
-    "comment": "NC合同就職説明会候補日"
-  },
-  {
-    "grade": "3年生",
-    "date": "2026-02-24",
     "period": 1,
     "courses": "領域別実習(補習)",
     "room": "",
@@ -33814,14 +33806,6 @@
     "courses": "領域別実習(補習)",
     "room": "",
     "comment": ""
-  },
-  {
-    "grade": "3年生",
-    "date": "2026-02-25",
-    "period": 0,
-    "courses": "",
-    "room": "",
-    "comment": "NC合同就職説明会候補日"
   },
   {
     "grade": "3年生",
@@ -33918,14 +33902,6 @@
     "courses": "領域別実習(補習)",
     "room": "",
     "comment": ""
-  },
-  {
-    "grade": "3年生",
-    "date": "2026-03-02",
-    "period": 0,
-    "courses": "",
-    "room": "",
-    "comment": "NC合同就職説明会候補日"
   },
   {
     "grade": "3年生",
@@ -33945,11 +33921,19 @@
   },
   {
     "grade": "3年生",
-    "date": "2026-03-03",
-    "period": 0,
-    "courses": "",
-    "room": "",
-    "comment": "NC合同就職説明会候補日"
+    "date": "2026-03-02",
+    "period": 3,
+    "courses": "JIHS･NC合同就職説明会",
+    "room": "101･201･202･301\n(演習21～29)",
+    "comment": ""
+  },
+  {
+    "grade": "3年生",
+    "date": "2026-03-02",
+    "period": 4,
+    "courses": "JIHS･NC合同就職説明会",
+    "room": "101･201･202･301\n(演習21～29)",
+    "comment": ""
   },
   {
     "grade": "3年生",
@@ -33965,6 +33949,22 @@
     "period": 2,
     "courses": "統合・政策オリエンテーション",
     "room": 301,
+    "comment": ""
+  },
+  {
+    "grade": "3年生",
+    "date": "2026-03-03",
+    "period": 3,
+    "courses": "JIHS･NC合同就職説明会",
+    "room": "101･201･202･301\n(演習21～29)",
+    "comment": ""
+  },
+  {
+    "grade": "3年生",
+    "date": "2026-03-03",
+    "period": 4,
+    "courses": "JIHS･NC合同就職説明会",
+    "room": "101･201･202･301\n(演習21～29)",
     "comment": ""
   },
   {
