@@ -34945,6 +34945,22 @@
   },
   {
     "grade": "4年生",
+    "date": "2026-01-22",
+    "period": 3,
+    "courses": "国試対策",
+    "room": "大講義室",
+    "comment": ""
+  },
+  {
+    "grade": "4年生",
+    "date": "2026-01-22",
+    "period": 4,
+    "courses": "国試対策",
+    "room": "大講義室",
+    "comment": ""
+  },
+  {
+    "grade": "4年生",
     "date": "2026-01-30",
     "period": 1,
     "courses": "総合学習",
@@ -51564,6 +51580,22 @@
     "date": "2026-01-22",
     "period": 2,
     "courses": "総合学習",
+    "room": "大講義室",
+    "comment": ""
+  },
+  {
+    "grade": "4年助産",
+    "date": "2026-01-22",
+    "period": 3,
+    "courses": "国試対策",
+    "room": "大講義室",
+    "comment": ""
+  },
+  {
+    "grade": "4年助産",
+    "date": "2026-01-22",
+    "period": 4,
+    "courses": "国試対策",
     "room": "大講義室",
     "comment": ""
   },
